@@ -188,7 +188,7 @@
     "$gear_1":3.67,
     "$gear_R":3.27,
     "$lsdlockcoef_C":0,
-    "$lsdlockcoef_F":0.05,
+    "$lsdlockcoef_F":0.5,
     "$lsdlockcoef_R":0.5,
     "$lsdlockcoefrev_C":0,
     "$lsdlockcoefrev_F":0,
