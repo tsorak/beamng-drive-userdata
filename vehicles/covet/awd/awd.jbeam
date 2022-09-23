@@ -1,0 +1,376 @@
+{
+    "covet_transfer_case_AWD_F_race": {
+        "information":{
+            "authors":"BeamNG",
+            "name":"Race AWD Transfer Case",
+            "value":3500,
+        },
+        "slotType" : "covet_differential_F",
+        "slots": [
+            ["type", "default", "description"],
+            // ["covet_finaldrive_F","covet_finaldrive_F_389", "Front Final Drive", {"coreSlot":true}],
+            ["covet_halfshaft_F","covet_halfshaft_F", "Front Half Shafts"],
+            // ["covet_halfshaft_R","covet_halfshaft_R", "Rear Half Shafts"],
+        ],
+        "controller" : [
+            ["filename"],
+            ["karostPowertrain"]
+        ],
+        "variables": [
+            ["name", "type", "unit", "category", "default", "min", "max", "title", "description"],
+            ["$finaldrive_C", "range", ":1", "Differentials", 3.96, 2.0, 6.0, "Final Drive Gear Ratio", "Torque multiplication ratio", {"subCategory":"Center"}],
+            ["$difftorquesplit_C", "range", "%", "Differentials", 0.65, 0.20, 0.80, "Base Torque Split", "Percent of engine torque to front wheels", {"minDis":20, "maxDis":80, "stepDis":1, "subCategory":"Center"}],
+            ["$lsdpreload_C", "range", "N/m", "Differentials", 25, 0, 250, "Pre-load Torque", "Initial locking torque between front and rear axles", {"subCategory":"Center"}],
+            ["$lsdlockcoef_C", "range", "", "Differentials", 0.125, 0, 0.5, "Power Lock Rate", "Additional locking torque proportional to engine torque", {"minDis":0, "maxDis":100, "subCategory":"Center"}],
+            ["$lsdlockcoefrev_C", "range", "", "Differentials", 0.02, 0, 0.5, "Coast Lock Rate", "Additional locking torque proportional to engine braking", {"minDis":0, "maxDis":100, "subCategory":"Center"}],
+
+            ["$lsdpreload_R", "range", "N/m", "Differentials", 40, 0, 500, "Pre-load Torque", "Initial locking torque between left and right wheels", {"subCategory":"Rear"}],
+            ["$lsdlockcoef_R", "range", "", "Differentials", 0.3, 0, 0.5, "Power Lock Rate", "Additional locking torque proportional to engine torque", {"minDis":0, "maxDis":100, "subCategory":"Rear"}],
+            ["$lsdlockcoefrev_R", "range", "", "Differentials", 0, 0, 0.5, "Coast Lock Rate", "Additional locking torque proportional to engine braking", {"minDis":0, "maxDis":100, "subCategory":"Rear"}],
+
+            ["$lsdpreload_F", "range", "N/m", "Differentials", 40, 0, 500, "Pre-load Torque", "Initial locking torque between left and right wheels", {"subCategory":"Front"}],
+            ["$lsdlockcoef_F", "range", "", "Differentials", 0.3, 0, 0.5, "Power Lock Rate", "Additional locking torque proportional to engine torque", {"minDis":0, "maxDis":100, "subCategory":"Front"}],
+            ["$lsdlockcoefrev_F", "range", "", "Differentials", 0, 0, 0.5, "Coast Lock Rate", "Additional locking torque proportional to engine braking", {"minDis":0, "maxDis":100, "subCategory":"Front"}],
+        ],
+        "powertrain" : [
+            ["type", "name", "inputName", "inputIndex"],
+            ["differential", "transfercase", "gearbox", 1, {"diffType":"lsd", "lsdPreload":"$lsdpreload_C", "lsdLockCoef":"$lsdlockcoef_C", "lsdRevLockCoef":"$lsdlockcoefrev_C", "diffTorqueSplit":"$=1-$difftorquesplit_C", "friction":0.6, "dynamicFriction":0.00043, "torqueLossCoef":0.0116, "uiName":"Center Differential","defaultVirtualInertia":0.1,"speedLimitCoef":0.1,"gearRatio":"$finaldrive_C"}],
+            ["differential", "differential_F", "transfercase", 2, {"diffType":"lsd", "lsdPreload":"$lsdpreload_F", "lsdLockCoef":"$lsdlockcoef_F", "lsdRevLockCoef":"$lsdlockcoefrev_F", "friction":0.6, "dynamicFriction":0.00043, "torqueLossCoef":0.0116, "uiName":"Front Differential","defaultVirtualInertia":0.1,"speedLimitCoef":0.1}],
+            ["differential", "differential_R", "transfercase", 1, {"diffType":"lsd", "lsdPreload":"$lsdpreload_R", "lsdLockCoef":"$lsdlockcoef_R", "lsdRevLockCoef":"$lsdlockcoefrev_R", "friction":0.6, "dynamicFriction":0.00043, "torqueLossCoef":0.0116, "uiName":"Rear Differential","defaultVirtualInertia":0.1,"speedLimitCoef":0.1}],
+        ],
+        "differential_R" : {
+            "gearRatio":1,
+        },
+        "differential_F" : {
+            "gearRatio":1,
+        },
+    },
+    "covet_transfer_case_AWD_R_race": {
+        "information":{
+            "authors":"BeamNG",
+            "name":"Race AWD Transfer Case",
+            "value":3500,
+        },
+        "slotType" : "covet_differential_R",
+        "slots": [
+            ["type", "default", "description"],
+            // ["covet_finaldrive_F","covet_finaldrive_F_389", "Front Final Drive", {"coreSlot":true}],
+            ["covet_halfshaft_F","covet_halfshaft_F", "Front Half Shafts"],
+            // ["covet_halfshaft_R","covet_halfshaft_R", "Rear Half Shafts"],
+        ],
+        "controller" : [
+            ["filename"],
+            ["karostPowertrain"]
+        ],
+        "variables": [
+            ["name", "type", "unit", "category", "default", "min", "max", "title", "description"],
+            ["$finaldrive_C", "range", ":1", "Differentials", 3.96, 2.0, 6.0, "Final Drive Gear Ratio", "Torque multiplication ratio", {"subCategory":"Center"}],
+            ["$difftorquesplit_C", "range", "%", "Differentials", 0.65, 0.20, 0.80, "Base Torque Split", "Percent of engine torque to front wheels", {"minDis":20, "maxDis":80, "stepDis":1, "subCategory":"Center"}],
+            ["$lsdpreload_C", "range", "N/m", "Differentials", 25, 0, 250, "Pre-load Torque", "Initial locking torque between front and rear axles", {"subCategory":"Center"}],
+            ["$lsdlockcoef_C", "range", "", "Differentials", 0.125, 0, 0.5, "Power Lock Rate", "Additional locking torque proportional to engine torque", {"minDis":0, "maxDis":100, "subCategory":"Center"}],
+            ["$lsdlockcoefrev_C", "range", "", "Differentials", 0.02, 0, 0.5, "Coast Lock Rate", "Additional locking torque proportional to engine braking", {"minDis":0, "maxDis":100, "subCategory":"Center"}],
+
+            ["$lsdpreload_R", "range", "N/m", "Differentials", 40, 0, 500, "Pre-load Torque", "Initial locking torque between left and right wheels", {"subCategory":"Rear"}],
+            ["$lsdlockcoef_R", "range", "", "Differentials", 0.3, 0, 0.5, "Power Lock Rate", "Additional locking torque proportional to engine torque", {"minDis":0, "maxDis":100, "subCategory":"Rear"}],
+            ["$lsdlockcoefrev_R", "range", "", "Differentials", 0, 0, 0.5, "Coast Lock Rate", "Additional locking torque proportional to engine braking", {"minDis":0, "maxDis":100, "subCategory":"Rear"}],
+
+            ["$lsdpreload_F", "range", "N/m", "Differentials", 40, 0, 500, "Pre-load Torque", "Initial locking torque between left and right wheels", {"subCategory":"Front"}],
+            ["$lsdlockcoef_F", "range", "", "Differentials", 0.3, 0, 0.5, "Power Lock Rate", "Additional locking torque proportional to engine torque", {"minDis":0, "maxDis":100, "subCategory":"Front"}],
+            ["$lsdlockcoefrev_F", "range", "", "Differentials", 0, 0, 0.5, "Coast Lock Rate", "Additional locking torque proportional to engine braking", {"minDis":0, "maxDis":100, "subCategory":"Front"}],
+        ],
+        "powertrain" : [
+            ["type", "name", "inputName", "inputIndex"],
+            ["differential", "transfercase", "gearbox", 1, {"diffType":"lsd", "lsdPreload":"$lsdpreload_C", "lsdLockCoef":"$lsdlockcoef_C", "lsdRevLockCoef":"$lsdlockcoefrev_C", "diffTorqueSplit":"$=1-$difftorquesplit_C", "friction":0.6, "dynamicFriction":0.00043, "torqueLossCoef":0.0116, "uiName":"Center Differential","defaultVirtualInertia":0.1,"speedLimitCoef":0.1,"gearRatio":"$finaldrive_C"}],
+            ["differential", "differential_F", "transfercase", 2, {"diffType":"lsd", "lsdPreload":"$lsdpreload_F", "lsdLockCoef":"$lsdlockcoef_F", "lsdRevLockCoef":"$lsdlockcoefrev_F", "friction":0.6, "dynamicFriction":0.00043, "torqueLossCoef":0.0116, "uiName":"Front Differential","defaultVirtualInertia":0.1,"speedLimitCoef":0.1}],
+            ["differential", "differential_R", "transfercase", 1, {"diffType":"lsd", "lsdPreload":"$lsdpreload_R", "lsdLockCoef":"$lsdlockcoef_R", "lsdRevLockCoef":"$lsdlockcoefrev_R", "friction":0.6, "dynamicFriction":0.00043, "torqueLossCoef":0.0116, "uiName":"Rear Differential","defaultVirtualInertia":0.1,"speedLimitCoef":0.1}],
+        ],
+        "differential_R" : {
+            "gearRatio":1,
+        },
+        "differential_F" : {
+            "gearRatio":1,
+        },
+    },
+
+    "covet_transaxle_R_8SQ_race": {
+        "information":{
+            "authors":"BeamNG",
+            "name":"Race 8-Speed Sequential Transaxle",
+            "value":16000,
+        },
+        "slotType" : "covet_transaxle_R",
+        "slots": [
+            ["type", "default", "description"],
+            ["covet_flywheel","covet_flywheel_race","Flywheel", {"coreSlot":true}],
+            ["covet_differential_R","covet_differential_R_race", "Rear Differential"],
+        ],
+        "variables": [
+            ["name", "type", "unit", "category", "default", "min", "max", "title", "description"],
+            ["$gear_R", "range", ":1", "Transmission", 3.27, 0.5, 5, "Reverse Gear Ratio", "Torque multiplication ratio", {"stepDis":0.01}],
+            ["$gear_1", "range", ":1", "Transmission", 3.67, 0.5, 5, "1st Gear Ratio",     "Torque multiplication ratio", {"stepDis":0.01}],
+            // ["$gear_2", "range", ":1", "Transmission", 2.28, 0.5, 5, "2nd Gear Ratio",     "Torque multiplication ratio", {"stepDis":0.01}],
+            // ["$gear_3", "range", ":1", "Transmission", 1.62, 0.5, 5, "3rd Gear Ratio",     "Torque multiplication ratio", {"stepDis":0.01}],
+            // ["$gear_4", "range", ":1", "Transmission", 1.27, 0.5, 5, "4th Gear Ratio",     "Torque multiplication ratio", {"stepDis":0.01}],
+            // ["$gear_5", "range", ":1", "Transmission", 1.00, 0.5, 5, "5th Gear Ratio",     "Torque multiplication ratio", {"stepDis":0.01}],
+            // ["$gear_6", "range", ":1", "Transmission", 1.00, 0.5, 5, "6th Gear Ratio",     "Torque multiplication ratio", {"stepDis":0.01}],
+            // ["$gear_7", "range", ":1", "Transmission", 1.00, 0.5, 5, "7th Gear Ratio",     "Torque multiplication ratio", {"stepDis":0.01}],
+            // ["$gear_8", "range", ":1", "Transmission", 1.00, 0.5, 5, "8th Gear Ratio",     "Torque multiplication ratio", {"stepDis":0.01}],
+        ],
+         "powertrain": [
+            ["type", "name", "inputName", "inputIndex"],
+            ["frictionClutch", "clutch", "mainEngine", 1],
+            ["sequentialGearbox", "gearbox", "clutch", 1],
+        ],
+        "gearbox": {
+            "uiName":"Gearbox",
+            "gearRatios":["$=-$gear_R", 0, "$gear_1", "$=$gear_1*0.8^1", "$=$gear_1*0.8^2", "$=$gear_1*0.8^3", "$=$gear_1*0.8^4", "$=$gear_1*0.8^5", "$=$gear_1*0.8^6", "$=$gear_1*0.8^7"],
+            // "gearRatios":["$=-$gear_R", 0, "$gear_1", "$gear_2", "$gear_3", "$gear_4", "$gear_5"],
+            "friction": 0.76,
+            "dynamicFriction": 0.00076,
+            "torqueLossCoef": 0.012,
+    
+            "gearWhineCoefsInput":  [0.66, 0.00, 0.33, 0.33, 0.33, 0.33, 0.33, 0.33, 0.33, 0.33],
+            "gearWhineCoefsOutput": [0.60, 0.00, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80],
+            "gearWhineInputEvent": "event:>Vehicle>Transmission>straight_01>twine_in_race_sq",
+            "gearWhineOutputEvent": "event:>Vehicle>Transmission>straight_01>twine_out_race_sq",
+    
+            //"forwardInputPitchCoef":1
+            //"forwardOutputPitchCoef":1
+            //"reverseInputPitchCoef":0.7
+            //"reverseOutputPitchCoef":0.7
+    
+            //"gearWhineInputPitchCoefSmoothing":50
+            //"gearWhineOutputPitchCoefSmoothing":50
+            //"gearWhineInputVolumeCoefSmoothing":10
+            //"gearWhineOutputVolumeCoefSmoothing":10
+    
+            //"gearWhineFixedCoefInput": 0.5
+            //"gearWhineFixedCoefOutput": 0.8
+    
+        },
+        "clutch": {
+            "clutchFreePlay":0.75,
+            "lockSpringCoef":0.3,
+        },
+        "vehicleController": {
+            "calculateOptimalLoadShiftPoints": true,
+            "shiftDownRPMOffsetCoef":1.17,
+            //"aggressionSmoothingDown":0.05
+            "aggressionHoldOffThrottleDelay":3,
+            //"lowShiftDownRPM":[0,0,0,1600,1900,1800,1600,1500],
+            //"lowShiftUpRPM":[0,0,3500,3300,3150,3000,2900],
+            "lowShiftDownRPM":[0,0,0,2000,2600,2600,2600,2600,2600,2600],
+            "lowShiftUpRPM":[0,0,4200,4200,4050,3850,3700,3700,3700,3700],
+            //"wheelSlipUpThreshold":100,
+            "clutchLaunchStartRPM":3500,
+            "clutchLaunchTargetRPM":3500,
+        },
+        "flexbodies": [
+             ["mesh", "[group]:", "nonFlexMaterials"],
+             ["covet_transmission_midengine", ["covet_engine_midengine","covet_transaxle"]],
+        ],
+        "nodes": [
+             ["id", "posX", "posY", "posZ"],
+             {"selfCollision":false},
+             {"collision":true},
+             //transaxle
+             {"frictionCoef":0.5},
+             {"nodeMaterial":"|NM_METAL"},
+             {"group":"covet_transaxle"},
+             {"nodeWeight":7.0},
+             ["tra1",0.0,1.2046,0.358],
+             ["tra2r",-0.113,1.669,0.49],
+             ["tra2l",0.113,1.669,0.49],
+             ["tra3",0.0,1.60,0.25],
+             {"group":""},
+    
+             //transmission mount nodes
+             {"nodeWeight":2.0},
+             ["tm1r",-0.138,1.4,0.337],
+             ["tm1l",0.138,1.4,0.337],
+        ],
+        "beams": [
+              ["id1:", "id2:"],
+              //transaxle
+              {"deformLimitExpansion":1.2},
+              {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+              {"beamSpring":8501000,"beamDamp":250},
+              {"beamDeform":1120000,"beamStrength":"FLT_MAX"},
+              ["e2l", "tra1"],
+              ["e2r", "tra1"],
+              ["tra1", "e4l"],
+              ["tra1", "e4r"],
+              ["tra1", "tra3"],
+              ["tra1", "tra2r"],
+              ["tra1", "tra2l"],
+              ["tra2l", "tra2r"],
+              ["tra2r", "tra3"],
+              ["tra3", "tra2l"],
+              ["tra2r", "e2r"],
+              ["tra2r", "e2l"],
+              ["tra2r", "e4r"],
+              ["tra2r", "e4l"],
+              ["tra2l", "e2l"],
+              ["tra2l", "e2r"],
+              ["tra2l", "e4r"],
+              ["tra2l", "e4l"],
+              ["tra3", "e2r"],
+              ["tra3", "e2l"],
+              ["tra3", "e4l"],
+              ["tra3", "e4r"],
+    
+              //transmission mount nodes
+              {"beamSpring":2501000,"beamDamp":50},
+              {"beamDeform":63000,"beamStrength":"FLT_MAX"},
+              ["tm1r", "tra2r"],
+              ["tm1r", "tra2l"],
+              ["tm1r", "tra3"],
+              ["tm1r", "tra1"],
+              ["tm1r", "e2l"],
+              ["tm1r", "e2r"],
+              ["tm1r", "e4r"],
+              ["tm1r", "e4l"],
+    
+              ["tm1l", "tra2r"],
+              ["tm1l", "tra2l"],
+              ["tm1l", "tra3"],
+              ["tm1l", "tra1"],
+              ["tm1l", "e2l"],
+              ["tm1l", "e2r"],
+              ["tm1l", "e4r"],
+              ["tm1l", "e4l"],
+    
+              ["tm1r", "tm1l"],
+              {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+        ],
+    },
+
+    "covet_transaxle_R_1A": {
+        "information":{
+            "authors":"BeamNG",
+            "name":"1-Speed Automatic Transaxle",
+            "value":16000,
+        },
+        "slotType" : "covet_transaxle_R",
+        "slots": [
+            ["type", "default", "description"],
+            // ["covet_flywheel","covet_flywheel_race","Flywheel", {"coreSlot":true}],
+            ["covet_differential_R","covet_transfer_case_AWD_R_race", "Rear Differential"],
+        ],
+        "powertrain": [
+            ["type", "name", "inputName", "inputIndex"],
+            ["torqueConverter", "torqueConverter", "mainEngine", 1],
+            ["automaticGearbox", "gearbox", "torqueConverter", 1],
+        ],
+        "controller" : [
+            ["filename"],
+            ["1gearTC"]
+        ],
+        "gearbox": {
+            "uiName":"Gearbox",
+            "gearRatios":[-1.5, 0, 0.5],
+            "friction": 0.76,
+            "dynamicFriction": 0.00076,
+            "torqueLossCoef": 0.012,
+        },
+        "torqueConverter": {
+            "uiName":"Torque Converter",
+            "converterDiameter": 0.2,
+            "converterStiffness":12,
+            "couplingAVRatio":0.99,
+            "stallTorqueRatio":1,
+            "lockupClutchTorque":999999,
+            // "additionalEngineInertia":0.10,
+        },
+        "vehicleController": {
+            "automaticModes":"PRNM",
+            "useSmartAggressionCalculation":false,
+            "calculateOptimalLoadShiftPoints": false,
+            "transmissionGearChangeDelay":0.2,
+            "gearboxDecisionSmoothingUp":1.1,
+            "gearboxDecisionSmoothingDown":0.3,
+            "lowShiftDownRPM":1500,
+            // "lowShiftUpRPM":[0,0,1800,2500,2700],
+            "wheelSlipUpThreshold":999999,
+            "shiftDownRPMOffsetCoef":1.1,
+        },
+        "flexbodies": [
+             ["mesh", "[group]:", "nonFlexMaterials"],
+             ["covet_transmission_midengine", ["covet_engine_midengine","covet_transaxle"]],
+        ],
+        "nodes": [
+             ["id", "posX", "posY", "posZ"],
+             {"selfCollision":false},
+             {"collision":true},
+             //transaxle
+             {"frictionCoef":0.5},
+             {"nodeMaterial":"|NM_METAL"},
+             {"group":"covet_transaxle"},
+             {"nodeWeight":7.0},
+             ["tra1",0.0,1.2046,0.358],
+             ["tra2r",-0.113,1.669,0.49],
+             ["tra2l",0.113,1.669,0.49],
+             ["tra3",0.0,1.60,0.25],
+             {"group":""},
+    
+             //transmission mount nodes
+             {"nodeWeight":2.0},
+             ["tm1r",-0.138,1.4,0.337],
+             ["tm1l",0.138,1.4,0.337],
+        ],
+        "beams": [
+              ["id1:", "id2:"],
+              //transaxle
+              {"deformLimitExpansion":1.2},
+              {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+              {"beamSpring":8501000,"beamDamp":250},
+              {"beamDeform":1120000,"beamStrength":"FLT_MAX"},
+              ["e2l", "tra1"],
+              ["e2r", "tra1"],
+              ["tra1", "e4l"],
+              ["tra1", "e4r"],
+              ["tra1", "tra3"],
+              ["tra1", "tra2r"],
+              ["tra1", "tra2l"],
+              ["tra2l", "tra2r"],
+              ["tra2r", "tra3"],
+              ["tra3", "tra2l"],
+              ["tra2r", "e2r"],
+              ["tra2r", "e2l"],
+              ["tra2r", "e4r"],
+              ["tra2r", "e4l"],
+              ["tra2l", "e2l"],
+              ["tra2l", "e2r"],
+              ["tra2l", "e4r"],
+              ["tra2l", "e4l"],
+              ["tra3", "e2r"],
+              ["tra3", "e2l"],
+              ["tra3", "e4l"],
+              ["tra3", "e4r"],
+    
+              //transmission mount nodes
+              {"beamSpring":2501000,"beamDamp":50},
+              {"beamDeform":63000,"beamStrength":"FLT_MAX"},
+              ["tm1r", "tra2r"],
+              ["tm1r", "tra2l"],
+              ["tm1r", "tra3"],
+              ["tm1r", "tra1"],
+              ["tm1r", "e2l"],
+              ["tm1r", "e2r"],
+              ["tm1r", "e4r"],
+              ["tm1r", "e4l"],
+    
+              ["tm1l", "tra2r"],
+              ["tm1l", "tra2l"],
+              ["tm1l", "tra3"],
+              ["tm1l", "tra1"],
+              ["tm1l", "e2l"],
+              ["tm1l", "e2r"],
+              ["tm1l", "e4r"],
+              ["tm1l", "e4l"],
+    
+              ["tm1r", "tm1l"],
+              {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+        ],
+    },
+}

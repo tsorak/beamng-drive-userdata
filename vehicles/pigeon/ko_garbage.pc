@@ -1,0 +1,75 @@
+{
+"vars":{
+  "$fuel":30,
+  "$trackwidth_R":0,
+  "$steer_center":0.999
+},
+"format":2,
+"model":"pigeon",
+"colors":[
+  [
+    1,
+    1,
+    1,
+    1.4
+  ],
+  [
+    1,
+    1,
+    1,
+    1.4
+  ],
+  [
+    1,
+    1,
+    1,
+    1.4
+  ]
+],
+"parts":{
+  "paint_design":"pigeon_skin_streetcleaning",
+  "gps":"none",
+  "pigeon_bumper_F":"pigeon_bumper_F",
+  "pigeon_brake_R":"pigeon_brake_R",
+  "brakepad_R":"brakepad_R",
+  "pengine_transmission_trash":"pengine_transmission_trash",
+  "pigeon_frame":"pigeon_frame",
+  "pigeon_mirror_R":"pigeon_mirror_R",
+  "pigeon_licenseplate_F":"pigeon_licenseplate_F",
+  "pigeon_suspension_F":"pigeon_suspension_F",
+  "pigeon_door_R":"pigeon_door_R",
+  "pigeon_radiator":"pigeon_radiator",
+  "pigeon_wheel_F":"pigeon_wheel_F",
+  "pigeon_steer":"pigeon_steer",
+  "pigeon_hood":"pigeon_hood",
+  "pigeon_door_L":"pigeon_door_L",
+  "pigeon_bed_flares":"none",
+  "pigeon_mod":"none",
+  "pigeon_stabilizer_R":"none",
+  "pigeon_driveshaft_R":"pengine_driveshaft_R",
+  "pigeon_beacon":"pigeon_beaconlight_orange",
+  "pigeon_sparetire":"none",
+  "pigeon_stabilizer_L":"none",
+  "pigeon_bed":"pigeon_bed",
+  "pigeon_fueltank":"pengine_fueltank_gasoline",
+  "pigeon_tailgate":"pigeon_tailgate",
+  "licenseplate_design_2_1":"none",
+  "pigeon_engine":"pengine_engine_trash",
+  "pigeon_coilover_F":"pigeon_coilover_F",
+  "pigeon_steering":"pigeon_steering",
+  "pigeon_spring_R":"pigeon_spring_R",
+  "pigeon_body":"pigeon_body",
+  "pigeon_differential_R":"pigeon_differential_R_welded",
+  "brakepad_F":"brakepad_F",
+  "pigeon_brake_F":"pigeon_brake_F",
+  "pigeon_suspension_R":"pigeon_axle_R",
+  "pigeon_towhitch":"none",
+  "hatch_intake_trash":"hatch_turbo_stage1_T",
+  "pigeon_wheel_R":"pigeon_wheel_R",
+  "pigeon_bin":"pigeon_bin",
+  "pigeon_licenseplate_R":"pigeon_licenseplate_R",
+  "pigeon_shock_R":"pigeon_shock_R",
+  "pigeon_bedextension":"pigeon_bedextension",
+  "pigeon_bumper_R":"pigeon_bumper_R"
+}
+}

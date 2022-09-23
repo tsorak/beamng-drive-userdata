@@ -1,0 +1,413 @@
+{
+    "sunburst_engine_2.6": {
+        "information":{
+            "authors":"BeamNG",
+            "name":"2.6L I6 Engine",
+            "value":3800,
+        },
+        "slotType" : "sunburst_engine",
+        "slots": [
+            ["type", "default", "description"],
+            ["sunburst_exhaust_I4","sunburst_exhaust_I4", "Exhaust"],
+            ["sunburst_enginemounts","sunburst_enginemounts", "Engine Mounts", {"coreSlot":true}],
+            ["sunburst_intake","sunburst_intake", "Intake", {"coreSlot":true}],
+            ["sunburst_oilpan","sunburst_oilpan", "Oil Pan", {"coreSlot":true}],
+            ["sunburst_engine_ecu","sunburst_engine_ecu", "Engine Management", {"coreSlot":true}],
+            ["n2o_system","", "Nitrous Oxide System"],
+            ["sunburst_engine_internals","sunburst_engine_internals", "Engine Long Block", {"coreSlot":true}],
+            ["sunburst_transmission","sunburst_transmission_6M", "Transmission"],
+        ],
+        "powertrain": [
+            ["type", "name", "inputName", "inputIndex"],
+            ["combustionEngine", "mainEngine", "dummy", 0],
+        ],
+        "mainEngine":{
+            "torque":[
+                ["rpm", "torque"],
+                [0, 0],
+                [500, 97],
+                [1000, 138],
+                [2000, 176],
+                [3000, 218],
+                [4000, 231],
+                [4500, 233],
+                [5000, 233],
+                [5500, 230],
+                [6000, 223],
+                [6500, 215],
+                [7000, 201.1],
+                [7500, 184.5],
+                [8000, 144.6],
+                [9000, 136],
+            ],
+    
+            "idleRPM":950,
+            //max rpm physically capable of
+            "maxRPM":7200,
+            "inertia":0.09,
+            "friction":12,
+            "dynamicFriction":0.025,
+            "engineBrakeTorque":36,
+            //"burnEfficiency":0.41,
+            "burnEfficiency":[
+                [0, 0.12],
+                [0.05, 0.27],
+                [0.4, 0.46],
+                [0.7, 0.55],
+                [1, 0.744],
+            ],
+            //fuel system
+            "energyStorage": "mainTank",
+            "requiredEnergyType":"gasoline",
+    
+            //exhaust
+            "instantAfterFireSound": "event:>Vehicle>Afterfire>i4_01>single",
+            "sustainedAfterFireSound": "event:>Vehicle>Afterfire>i4_01>multi",
+            "shiftAfterFireSound": "event:>Vehicle>Afterfire>i4_01>shift",
+            "particulates":0.015,
+            "instantAfterFireCoef": 0.75,
+            "sustainedAfterFireCoef": 0.75,
+            "instantAfterFireVolumeCoef": 1.0,
+            "sustainedAfterFireVolumeCoef": 0.6,
+            "shiftAfterFireVolumeCoef": 0.75,
+    
+            //cooling and oil system
+            "thermalsEnabled":true,
+            "engineBlockMaterial":"aluminum",
+            "oilVolume":4,
+    
+            //engine durability
+            "cylinderWallTemperatureDamageThreshold":130,
+            "headGasketDamageThreshold":1500000,
+            "pistonRingDamageThreshold":1500000,
+            "connectingRodDamageThreshold":2000000,
+            "maxTorqueRating": 2000,
+            "maxOverTorqueDamage": 350,
+    
+            //node beam interface
+            "torqueReactionNodes:":["e1l","e2l","e4r"],
+            "waterDamage": {"[engineGroup]:":["engine_intake"]},
+            "radiator": {"[engineGroup]:":["radiator"]},
+            "engineBlock": {"[engineGroup]:":["engine_block"]},
+            "breakTriggerBeam":"engine",
+            "uiName":"Engine",
+            "soundConfig": "soundConfig",
+            "soundConfigExhaust": "soundConfigExhaust",
+    
+            //starter motor
+            "starterSample":"event:>Engine>Starter>i4_2001_eng",
+            "starterSampleExhaust":"event:>Engine>Starter>i4_2001_exh",
+            "shutOffSampleEngine":"event:>Engine>Shutoff>i4_2001_eng",
+            "shutOffSampleExhaust":"event:>Engine>Shutoff>i4_2001_exh",
+            "starterVolume":0.62,
+            "starterVolumeExhaust":0.6,
+            "shutOffVolumeEngine":0.3,
+            "shutOffVolumeExhaust":0.36,
+            "starterThrottleKillTime":0.6,
+            "idleRPMStartRate":2,
+            "idleRPMStartCoef":1,
+    
+            //damage deformGroups
+            "deformGroups":["mainEngine", "mainEngine_piping", "mainEngine_accessories"]
+            "deformGroups_oilPan":["oilpan_damage"]
+        },
+        "soundConfig": {
+            "sampleName": "I6_2_engine",
+            "intakeMuffling": 0.65,
+    
+            "mainGain": -5,
+            "onLoadGain":1,
+            "offLoadGain":0.55,
+    
+            "maxLoadMix": 0.75,
+            "minLoadMix": 0,
+    
+            "eqLowGain": -6,
+            "eqLowFreq": 500,
+            "eqLowWidth": 0.1,
+    
+            "eqHighGain": -3,
+            "eqHighFreq": 1500,
+            "eqHighWidth": 0.25,
+    
+            "lowShelfGain":-5,
+            "lowShelfFreq":80,
+    
+            "highShelfGain":-4,
+            "highShelfFreq":2500,
+    
+            "fundamentalFrequencyCylinderCount":4,
+            "eqFundamentalGain": -2,
+        },
+        "soundConfigExhaust": {
+            "sampleName": "I6_2_exhaust",
+    
+            "mainGain": 1.4,
+            "onLoadGain":1,
+            "offLoadGain":0.5,
+    
+            "maxLoadMix": 0.6,
+            "minLoadMix": 0,
+    
+            "eqLowGain": -1,
+            "eqLowFreq": 90,
+            "eqLowWidth": 0.5,
+    
+            "eqHighGain": 0,
+            "eqHighFreq": 4000,
+            "eqHighWidth": 0.1,
+    
+            "lowShelfGain":0,
+            "lowShelfFreq":50,
+    
+            "highShelfGain":0,
+            "highShelfFreq":2500,
+    
+            "fundamentalFrequencyCylinderCount":4,
+            "eqFundamentalGain": -6,
+        },
+        "vehicleController": {
+            "clutchLaunchStartRPM":2000,
+            "clutchLaunchTargetRPM":2800,
+            //**highShiftDown can be overwritten by automatic transmissions**
+            "highShiftDownRPM":4800 //[0,0,0,3800,4400,4600,4800,4800]
+            //**highShiftUp can be overwritten by intake modifications**
+            "highShiftUpRPM":6400,
+        },
+        "flexbodies": [
+             ["mesh", "[group]:", "nonFlexMaterials"],
+             ["sunburst_engine", ["sunburst_engine","sunburst_transmission"]],
+        ],
+        "nodes": [
+             ["id", "posX", "posY", "posZ"],
+             //--2.0L I4 Engine--
+             {"selfCollision":false},
+             {"collision":true},
+             {"nodeMaterial":"|NM_METAL"},
+             {"frictionCoef":0.5},
+             {"group":"sunburst_engine"},
+             {"engineGroup":"engine_block"},
+             {"nodeWeight":16.3},
+             ["e1r", -0.34, -1.57, 0.36,{"chemEnergy":1000,"burnRate":0.39,"flashPoint":1000,"specHeat": 0.2,"selfIgnitionCoef":false,"smokePoint":900,"baseTemp":"thermals","conductionRadius":0.15}],
+             ["e1l", -0.34, -1.26, 0.36],
+             ["e2r", 0.17, -1.57, 0.36,{"chemEnergy":1000,"burnRate":0.39,"flashPoint":1000,"specHeat": 0.2,"selfIgnitionCoef":false,"smokePoint":900,"baseTemp":"thermals","conductionRadius":0.15}],
+             ["e2l", 0.17, -1.26, 0.36],
+             {"engineGroup":["engine_block","engine_intake"]},
+             ["e3r", -0.34, -1.57, 0.77,{"chemEnergy":1000,"burnRate":0.39,"flashPoint":1000,"specHeat": 0.2,"selfIgnitionCoef":false,"smokePoint":900,"baseTemp":"thermals","conductionRadius":0.15}],
+             ["e3l", -0.34, -1.26, 0.77],
+             ["e4r", 0.17, -1.57, 0.77,{"isExhaust":"mainEngine","chemEnergy":1000,"burnRate":0.39,"flashPoint":800,"specHeat": 0.2,"selfIgnitionCoef":false,"smokePoint":900,"baseTemp":"thermals","conductionRadius":0.15}],
+             ["e4l", 0.17, -1.26, 0.77],
+             {"engineGroup":""},
+             {"group":""},
+             //engine mount nodes
+             ["em1r", -0.42, -1.4, 0.7, {"nodeWeight":3}],
+             ["em2l", 0.27, -1.4, 0.55, {"nodeWeight":3}],
+        ],
+        "beams": [
+              ["id1:", "id2:"],
+              {"beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+              {"beamSpring":15001000,"beamDamp":500},
+              {"beamDeform":250000,"beamStrength":"FLT_MAX"},
+              //engine
+              {"deformGroup":"mainEngine", "deformationTriggerRatio":0.001}
+              ["e1r","e1l"],
+              ["e2r","e2l"],
+              ["e3r","e3l"],
+              ["e4r","e4l"],
+    
+              ["e1r","e2r"],
+              ["e1l","e2l"],
+              ["e3r","e4r"],
+              ["e3l","e4l"],
+    
+              ["e1r","e3r"],
+              ["e1l","e3l"],
+              ["e2r","e4r", {"isExhaust":"mainEngine"}],
+              ["e2l","e4l"],
+    
+              ["e2r","e3r"],
+              ["e2l","e3l"],
+              ["e2r","e3l"],
+              ["e2l","e3r"],
+    
+              ["e1r","e4r"],
+              ["e1l","e4l"],
+              ["e1r","e4l"],
+              ["e1l","e4r"],
+    
+              ["e1r","e2l"],
+              ["e1l","e2r"],
+              ["e3r","e4l"],
+              ["e3l","e4r"],
+    
+              ["e1r","e3l"],
+              ["e1l","e3r"],
+              ["e2r","e4l"],
+              ["e2l","e4r"],
+    
+              //engine mount nodes
+              {"beamSpring":3400000,"beamDamp":150},
+              {"beamDeform":90000,"beamStrength":"FLT_MAX"},
+              ["em1r","e3l"],
+              ["em1r","e3r"],
+              ["em1r","e4l"],
+              ["em1r","e4r"],
+              ["em1r", "e1r"],
+              ["em1r", "e1l"],
+              ["em1r", "e2l"],
+              ["em1r", "e2r"],
+    
+              ["em2l","e3l"],
+              ["em2l","e3r"],
+              ["em2l","e4l"],
+              ["em2l","e4r"],
+              ["em2l", "e1r"],
+              ["em2l", "e1l"],
+              ["em2l", "e2l"],
+              ["em2l", "e2r"],
+              {"deformGroup":""},
+              {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+        ],
+    },
+
+    "sunburst_turbo_autistcharger": {
+        "information":{
+            "authors":"BeamNG",
+            "name":"Autistcharger",
+            "value":7900,
+        },
+        "slotType" : "sunburst_intake",
+        "variables": [
+            ["name", "type", "unit", "category", "default", "min", "max", "title", "description"],
+            // ["$wastegateStart", "range", "psi", "Engine", 12, 12, 30, "Turbo Boost Pressure", "Pressure at which the turbocharger wastegate begins to open", {"stepDis":0.5}],
+        ],
+        "turbocharger": {
+            "flutterSoundFileName":"event:>Vehicle>Forced_Induction>Turbo_04>turbo_bov_race",
+            "hissLoopEvent":"event:>Vehicle>Forced_Induction>Turbo_03>turbo_hiss_race",
+            "whineLoopEvent":"event:>Vehicle>Forced_Induction>Turbo_06>turbo_spin",
+            "bovEnabled":false,
+            "flutterSoundPressureCoef": 2.0,
+            "flutterSoundVolumeCoef":2.0,
+            "hissVolumePerPSI": 0.041,
+            "whineVolumePer10kRPM": 0.047,
+            "whinePitchPer10kRPM": 0.05,
+            "wastegateStart":143,
+            "wastegateLimit":144,
+            "maxExhaustPower": 60000,
+            "backPressureCoef": 0.00008,
+            "frictionCoef": 100,
+            "inertia":7,
+            "pressureRatePSI": 75,
+            "damageThresholdTemperature": 900,
+            "pressurePSI":[
+                //turbineRPM, pressure(PSI)
+                [0,       0],
+                // [30000,    1.5],
+                // [60000,      4],
+                // [90000,     11],
+                // [150000,    18],
+                // [200000,    25],
+                [250000,    144],
+                [300000,    145],
+            ],
+            "engineDef":[
+                //engineRPM, efficiency, exhaustFactor
+                [0,     0.0,    0.0],
+                [650,   0.23,   0.05],
+                [1400,  0.33,   0.1],
+                [2000,  0.41,   0.2],
+                [2500,  0.54,   0.3],
+                [3000,  0.85,   0.45],
+                [4000,  0.92,   0.79],
+                [5000,  0.96,   0.93],
+                [6000,  0.98,   1.0],
+                [7000,  1.0,    1.0],
+                [8000,  1.0,    1.0],
+                [9000,  1.0,    1.0],
+            ],
+        },
+        "mainEngine":{
+            //turbocharger name
+            "turbocharger":"turbocharger",
+            //exhaust
+            //"instantAfterFireCoef": 1.5,
+            //"sustainedAfterFireCoef": 1.0,
+            "$*instantAfterFireCoef": 3,
+            "$*sustainedAfterFireCoef": 2,
+    
+            //turbocharger deform groups
+            "deformGroups_turbo":["mainEngine_turbo","mainEngine_intercooler","mainEngine_piping"]
+        },
+        "soundConfig": {
+            "$+maxLoadMix": 0.2,
+            "$+minLoadMix": 0.1,
+            "$+intakeMuffling":-0.4,
+            "$+mainGain":2,
+            "$+eqLowGain": 7,
+        },
+        "soundConfigExhaust": {
+            "$+maxLoadMix": 0.2,
+            "$+minLoadMix": 0.01,
+            "$+mainGain": 0.5,
+            "$+eqLowGain": 0.5,
+        },
+        "vehicleController": {
+            "revMatchThrottle":0.25,
+            "clutchLaunchStartRPM":1800,
+            "clutchLaunchTargetRPM":2400,
+        },
+        "flexbodies": [
+             ["mesh", "[group]:", "nonFlexMaterials"],
+             ["sunburst_turbo", ["sunburst_engine"]],
+             ["sunburst_intercooler", ["sunburst_engine_bay","sunburst_intercooler"]],
+        ],
+        "nodes": [
+             ["id", "posX", "posY", "posZ"],
+             //--turbo and intercooler weight--
+             {"selfCollision":false},
+             {"collision":false},
+             {"nodeMaterial":"|NM_METAL"},
+             {"frictionCoef":0.5},
+             {"group":""},
+             {"nodeWeight":9},
+             ["turbo", 0.0, -1.33, 0.66],
+             {"group":"sunburst_intercooler"},
+             {"nodeWeight":8},
+             {"collision":true},
+             ["interc", 0.0, -2.00, 0.26],
+             {"group":""},
+        ],
+        "beams": [
+              ["id1:", "id2:"],
+              {"beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+              {"beamSpring":3000600,"beamDamp":150},
+              {"beamDeform":30000,"beamStrength":"FLT_MAX"},
+              {"deformGroup":"mainEngine_turbo", "deformationTriggerRatio":0.01}
+              ["turbo","e1r"],
+              ["turbo","e2r"],
+              ["turbo","e3r"],
+              ["turbo","e4r"],
+              ["turbo","e1l"],
+              ["turbo","e2l"],
+              ["turbo","e3l"],
+              ["turbo","e4l"],
+    
+              {"beamSpring":501000,"beamDamp":100},
+              {"beamDeform":3000,"beamStrength":"FLT_MAX"},
+              {"deformGroup":"mainEngine_intercooler", "deformationTriggerRatio":0.1}
+              ["interc","f13rr"],
+              //["interc","f13"],
+              ["interc","f13ll"],
+              ["interc","f11rr"],
+              //["interc","f11"],
+              ["interc","f11ll"],
+    
+              {"beamDeform":3000,"beamStrength":16000},
+              ["interc","f18"],
+              ["interc","f18r"],
+              ["interc","f18l"],
+              {"deformGroup":""}
+              {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+        ],
+    },
+}

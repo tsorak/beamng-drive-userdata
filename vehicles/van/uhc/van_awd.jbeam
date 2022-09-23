@@ -1,0 +1,18 @@
+{
+    "van_kopowertrain": {
+        "information": {
+            "authors": "BeamNG",
+            "name": "Race AWD Transfer Case",
+            "value": 3500,
+        },
+        "slotType": "van_mod",
+        "controller": [
+            [
+                "filename"
+            ],
+            [
+                "karostPowertrain"
+            ]
+        ],
+    },
+}

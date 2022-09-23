@@ -1,0 +1,54 @@
+{
+  "miramar_taillight_tsq_signal_L": {
+    "name": "miramar_taillight_tsq_signal_L",
+    "mapTo": "miramar_taillight_tsq_signal_L",
+    "class": "Material",
+    "persistentId": "b7cd007a-d690-460f-a25c-f459c26b6ce9",
+    "Stages": [
+      {
+        "diffuseColor": [
+          0.353246987,
+          0,
+          0,
+          1
+        ],
+        "specular": [
+          0.5,
+          0.5,
+          0.5,
+          1
+        ]
+      },
+      {},
+      {},
+      {}
+    ],
+    "translucentBlendOp": "None"
+  },
+  "miramar_taillight_tsq_signal_R": {
+    "name": "miramar_taillight_tsq_signal_R",
+    "mapTo": "miramar_taillight_tsq_signal_R",
+    "class": "Material",
+    "persistentId": "757bd78a-fcc9-4880-9627-8a161c004ed7",
+    "Stages": [
+      {
+        "diffuseColor": [
+          0.353246987,
+          0,
+          0,
+          1
+        ],
+        "specular": [
+          0.5,
+          0.5,
+          0.5,
+          1
+        ]
+      },
+      {},
+      {},
+      {}
+    ],
+    "translucentBlendOp": "None"
+  }
+}

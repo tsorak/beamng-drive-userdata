@@ -1,0 +1,38 @@
+{
+    "sunburst_quarterpanel_uhc": {
+        "information":{
+            "authors":"BeamNG",
+            "name":"UHC Quarter Panels",
+            "value":1800,
+        },
+        "slotType" : "sunburst_quarterpanel",
+        "slots": [
+            ["type", "default", "description"],
+            ["sunburst_fenderflare_R","", "Rear Fender Flares"],
+        ],
+        "flexbodies": [
+             ["mesh", "[group]:", "nonFlexMaterials"],
+             //body
+             ["sunburst_quarterpanels_widebody_kouhc", ["sunburst_body"]],
+        ],
+        "nodes": [
+             //redefine quarterpanel nodes wider/heavier
+             ["id", "posX", "posY", "posZ"],
+             {"group":"sunburst_body"},
+             {"selfCollision":true},
+             {"collision":true},
+             {"frictionCoef":0.5},
+             {"nodeWeight":3.5},
+             {"group":"sunburst_body"},
+             ["q6r", -0.84, 1.13, 0.64, {"group":["sunburst_body","sunburst_seats"]}],
+             ["q6l", 0.84, 1.13, 0.64, {"group":["sunburst_body","sunburst_seats"]}],
+             {"nodeWeight":1.9},
+             ["q7r", -0.85, 1.35, 0.66],
+             ["q7l", 0.85, 1.35, 0.66],
+             ["q8r", -0.84, 1.58, 0.54],
+             ["q8l", 0.84, 1.58, 0.54],
+             {"nodeMaterial":"|NM_METAL"},
+             {"group":""},
+        ],
+    },
+}

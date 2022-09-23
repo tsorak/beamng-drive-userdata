@@ -1,0 +1,44 @@
+{
+    "etk_transfer_case_AWD_race_XD": {
+        "information":{
+            "authors":"BeamNG",
+            "name":"XD AWD Transfer Case",
+            "value":3500,
+        },
+        "slotType" : "etk_transfer_case",
+        "controller" : [
+            ["filename"],
+            ["karostPowertrain"]
+        ],
+        "variables": [
+            ["name", "type", "unit", "category", "default", "min", "max", "title", "description"],
+            ["$difftorquesplit_C", "range", "%", "Differentials", 0.65, 0.20, 0.80, "Base Torque Split", "Percent of engine torque to front wheels", {"minDis":20, "maxDis":80, "stepDis":1, "subCategory":"Center"}],
+            ["$lsdpreload_C", "range", "N/m", "Differentials", 25, 0, 250, "Pre-load Torque", "Initial locking torque between front and rear axles", {"subCategory":"Center"}],
+            ["$lsdlockcoef_C", "range", "", "Differentials", 0.125, 0, 0.5, "Power Lock Rate", "Additional locking torque proportional to engine torque", {"minDis":0, "maxDis":100, "subCategory":"Center"}],
+            ["$lsdlockcoefrev_C", "range", "", "Differentials", 0.02, 0, 0.5, "Coast Lock Rate", "Additional locking torque proportional to engine braking", {"minDis":0, "maxDis":100, "subCategory":"Center"}],
+
+            ["$lsdpreload_R", "range", "N/m", "Differentials", 40, 0, 500, "Pre-load Torque", "Initial locking torque between left and right wheels", {"subCategory":"Rear"}],
+            ["$lsdlockcoef_R", "range", "", "Differentials", 0.3, 0, 0.5, "Power Lock Rate", "Additional locking torque proportional to engine torque", {"minDis":0, "maxDis":100, "subCategory":"Rear"}],
+            ["$lsdlockcoefrev_R", "range", "", "Differentials", 0, 0, 0.5, "Coast Lock Rate", "Additional locking torque proportional to engine braking", {"minDis":0, "maxDis":100, "subCategory":"Rear"}],
+
+            ["$lsdpreload_F", "range", "N/m", "Differentials", 40, 0, 500, "Pre-load Torque", "Initial locking torque between left and right wheels", {"subCategory":"Front"}],
+            ["$lsdlockcoef_F", "range", "", "Differentials", 0.3, 0, 0.5, "Power Lock Rate", "Additional locking torque proportional to engine torque", {"minDis":0, "maxDis":100, "subCategory":"Front"}],
+            ["$lsdlockcoefrev_F", "range", "", "Differentials", 0, 0, 0.5, "Coast Lock Rate", "Additional locking torque proportional to engine braking", {"minDis":0, "maxDis":100, "subCategory":"Front"}],
+            ["$finaldrive_C", "range", ":1", "Differentials", 3.07, 2.0, 6.0, "Final Drive Gear Ratio", "Torque multiplication ratio", {"subCategory":"Center"}],
+        ],
+    
+        "transfercase" : {
+            "gearRatio":"$finaldrive_C",
+        },
+        "powertrain" : [
+            ["type", "name", "inputName", "inputIndex"],
+            ["differential", "transfercase", "gearbox", 1, {"diffType":"lsd", "lsdPreload":"$lsdpreload_C", "lsdLockCoef":"$lsdlockcoef_C", "lsdRevLockCoef":"$lsdlockcoefrev_C", "diffTorqueSplit":"$=1-$difftorquesplit_C", "friction":0.6, "dynamicFriction":0.00043, "torqueLossCoef":0.0116, "uiName":"Center Differential","defaultVirtualInertia":0.1,"speedLimitCoef":0.1}],
+            ["differential", "differential_F", "transfercase", 2, {"diffType":"lsd", "lsdPreload":"$lsdpreload_F", "lsdLockCoef":"$lsdlockcoef_F", "lsdRevLockCoef":"$lsdlockcoefrev_F", "friction":0.6, "dynamicFriction":0.00043, "torqueLossCoef":0.0116, "uiName":"Front Differential","defaultVirtualInertia":0.1,"speedLimitCoef":0.1}],
+            ["differential", "differential_R", "transfercase", 1, {"diffType":"lsd", "lsdPreload":"$lsdpreload_R", "lsdLockCoef":"$lsdlockcoef_R", "lsdRevLockCoef":"$lsdlockcoefrev_R", "friction":0.6, "dynamicFriction":0.00043, "torqueLossCoef":0.0116, "uiName":"Rear Differential","defaultVirtualInertia":0.1,"speedLimitCoef":0.1}],
+            ["shaft", "wheelaxleRL", "differential_R", 1, {"deformGroups":["wheelaxleRL"], "breakTriggerBeam":"halfshaft_RL", "uiName":"Rear Left Halfshaft", "friction":1.57, "dynamicFriction": 0.0037}],
+            ["shaft", "wheelaxleRR", "differential_R", 2, {"deformGroups":["wheelaxleRR"], "breakTriggerBeam":"halfshaft_RR", "uiName":"Rear Right Halfshaft", "friction":1.57, "dynamicFriction": 0.0037}],
+            ["shaft", "wheelaxleFL", "differential_F", 1, {"deformGroups":["wheelaxleFL"], "breakTriggerBeam":"halfshaft_FL", "uiName":"Front Left Halfshaft", "friction":1.42, "dynamicFriction": 0.0034}],
+            ["shaft", "wheelaxleFR", "differential_F", 2, {"deformGroups":["wheelaxleFR"], "breakTriggerBeam":"halfshaft_FR", "uiName":"Front Right Halfshaft", "friction":1.42, "dynamicFriction": 0.0034}],
+        ],
+    },
+}

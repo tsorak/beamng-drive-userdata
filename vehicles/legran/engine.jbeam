@@ -1,0 +1,205 @@
+{
+    "bolide_transmission_6DCT_race": {
+        "information":{
+            "authors":"BeamNG",
+            "name":"Race 10-Speed Dual-Clutch Transmission",
+            "value":5800,
+        },
+        "slotType" : "legran_transmission",
+        "slots": [
+            ["type", "default", "description"],
+            // ["bolide_flywheel","bolide_flywheel","Flywheel", {"coreSlot":true}],
+            ["legran_differential_F","legran_differential_F", "Front Differential"],
+        ],
+        "variables": [
+            ["name", "type", "unit", "category", "default", "min", "max", "title", "description"],
+            ["$gear_R", "range", ":1", "Transmission", 3.25, 0.5, 5, "Reverse Gear Ratio", "Torque multiplication ratio", {"stepDis":0.01}],
+            ["$gear_1", "range", ":1", "Transmission", 3.64, 0.5, 5, "1st Gear Ratio",     "Torque multiplication ratio", {"stepDis":0.01}],
+        ],
+        "powertrain": [
+            ["type", "name", "inputName", "inputIndex"],
+            ["dctGearbox", "gearbox", "mainEngine", 1],
+        ],
+        "gearbox": {
+            "uiName":"Gearbox",
+            // "gearRatios":["$=-$gear_R", 0, "$gear_1", "$gear_2", "$gear_3", "$gear_4", "$gear_5", "$gear_6"],
+            "gearRatios":["$=-$gear_R", 0, "$gear_1", "$=$gear_1*0.8^1", "$=$gear_1*0.8^2", "$=$gear_1*0.8^3", "$=$gear_1*0.8^4", "$=$gear_1*0.8^5", "$=$gear_1*0.8^6", "$=$gear_1*0.8^7", "$=$gear_1*0.8^8", "$=$gear_1*0.8^9"],
+            "friction": 1.2,
+            "dynamicFriction": 0.00109,
+            "torqueLossCoef": 0.0135,
+            "parkLockTorque":2000,
+            "additionalEngineInertia":0.025,
+            // "gearboxNode:":["tra1"],
+    
+            "gearWhineCoefsInput":  [0.64, 0.00, 0.55, 0.53, 0.51, 0.49, 0.47, 0.45],
+            "gearWhineCoefsOutput": [0.00, 0.00, 0.50, 0.52, 0.54, 0.56, 0.58, 0.60],
+            "gearWhineInputEvent": "event:>Vehicle>Transmission>straight_01>twine_in_race",
+            "gearWhineOutputEvent": "event:>Vehicle>Transmission>straight_01>twine_out_race",
+        },
+        "vehicleController": {
+            "automaticModes":"PRNDSM",
+            "calculateOptimalLoadShiftPoints": true,
+            "shiftDownRPMOffsetCoef":1.2,
+            //"aggressionSmoothingUp":2
+            //"aggressionSmoothingDown":0.05
+            "aggressionHoldOffThrottleDelay":1,
+            //"lowShiftDownRPM":[0,0,0,1700,1800,1700,1600,1600],
+            //"lowShiftUpRPM":[0,0,3600,3400,3000,2900,2900],
+            // "lowShiftDownRPM":[0,0,0,2200,2500,2500,2500,2500],
+            // "lowShiftUpRPM":[0,0,4300,4200,4050,4000,3800],
+            "clutchLaunchStartRPM": 3000,
+            "clutchLaunchTargetRPM": 1000,
+            "autoDownShiftInM": false,
+        },
+        "flexbodies": [
+            ["mesh", "[group]:", "nonFlexMaterials"],
+            ["legran_transmission", ["legran_engine","legran_transmission"]],
+        ],
+        "nodes": [
+             ["id", "posX", "posY", "posZ"],
+             //--3 Speed Auto--
+             {"selfCollision":false},
+             {"collision":true},
+             {"nodeMaterial":"|NM_METAL"},
+             {"frictionCoef":0.5},
+             {"group":"legran_transmission"},
+             {"nodeWeight":12},
+             ["tra1r",-0.26, -1.31, 0.29],
+             ["tra1l", 0.26, -1.31, 0.29],
+             {"group":""},
+             //transmission mount node
+             ["em1l", 0.42, -1.55, 0.5, {"nodeWeight":3}],
+        ],
+        "beams": [
+              ["id1:", "id2:"],
+              //--TRANSMISSION--
+              {"beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+              {"beamSpring":8400600,"beamDamp":150},
+              {"beamDeform":540000,"beamStrength":"FLT_MAX"},
+              ["tra1l", "e1r"],
+              ["tra1l", "e3l"],
+              ["tra1l", "e1l"],
+              ["tra1l", "e3r"],
+              ["tra1r", "e2r"],
+              ["tra1r", "e4l"],
+              ["tra1r", "e1r"],
+              ["tra1r", "e3l"],
+              ["tra1r", "e2l"],
+              ["tra1r", "e4r"],
+              ["tra1r", "tra1l"],
+    
+              //transmission mount node
+              {"beamSpring":4400000,"beamDamp":150},
+              {"beamDeform":90000,"beamStrength":"FLT_MAX"},
+              ["em1l","e3l"],
+              ["em1l","e3r"],
+              ["em1l","e4l"],
+              ["em1l","e4r"],
+              ["em1l", "e1r"],
+              ["em1l", "e1l"],
+              ["em1l", "e2l"],
+              ["em1l", "e2r"],
+              ["em1l", "tra1l"],
+              {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+        ],
+    },
+    "bolide_transfer_case_AWD_race": {
+        "information":{
+            "authors":"BeamNG",
+            "name":"Race AWD Transfer Case",
+            "value":3500,
+        },
+        "slotType" : "legran_differential_F",
+        "controller" : [
+            ["filename"],
+            ["skylinePowertrain"]
+        ],
+        "variables": [
+            ["name", "type", "unit", "category", "default", "min", "max", "title", "description"],
+            ["$difftorquesplit_C", "range", "%", "Differentials", 0.65, 0.20, 0.80, "Base Torque Split", "Percent of engine torque to front wheels", {"minDis":20, "maxDis":80, "stepDis":1, "subCategory":"Center"}],
+            ["$lsdpreload_C", "range", "N/m", "Differentials", 25, 0, 250, "Pre-load Torque", "Initial locking torque between front and rear axles", {"subCategory":"Center"}],
+            ["$lsdlockcoef_C", "range", "", "Differentials", 0.125, 0, 0.5, "Power Lock Rate", "Additional locking torque proportional to engine torque", {"minDis":0, "maxDis":100, "subCategory":"Center"}],
+            ["$lsdlockcoefrev_C", "range", "", "Differentials", 0.02, 0, 0.5, "Coast Lock Rate", "Additional locking torque proportional to engine braking", {"minDis":0, "maxDis":100, "subCategory":"Center"}],
+
+            ["$lsdpreload_R", "range", "N/m", "Differentials", 40, 0, 500, "Pre-load Torque", "Initial locking torque between left and right wheels", {"subCategory":"Rear"}],
+            ["$lsdlockcoef_R", "range", "", "Differentials", 0.3, 0, 0.5, "Power Lock Rate", "Additional locking torque proportional to engine torque", {"minDis":0, "maxDis":100, "subCategory":"Rear"}],
+            ["$lsdlockcoefrev_R", "range", "", "Differentials", 0, 0, 0.5, "Coast Lock Rate", "Additional locking torque proportional to engine braking", {"minDis":0, "maxDis":100, "subCategory":"Rear"}],
+
+            ["$lsdpreload_F", "range", "N/m", "Differentials", 40, 0, 500, "Pre-load Torque", "Initial locking torque between left and right wheels", {"subCategory":"Front"}],
+            ["$lsdlockcoef_F", "range", "", "Differentials", 0.3, 0, 0.5, "Power Lock Rate", "Additional locking torque proportional to engine torque", {"minDis":0, "maxDis":100, "subCategory":"Front"}],
+            ["$lsdlockcoefrev_F", "range", "", "Differentials", 0, 0, 0.5, "Coast Lock Rate", "Additional locking torque proportional to engine braking", {"minDis":0, "maxDis":100, "subCategory":"Front"}],
+        ],
+        "powertrain" : [
+            ["type", "name", "inputName", "inputIndex"],
+            ["differential", "transfercase", "gearbox", 1, {"diffType":"lsd", "lsdPreload":"$lsdpreload_C", "lsdLockCoef":"$lsdlockcoef_C", "lsdRevLockCoef":"$lsdlockcoefrev_C", "diffTorqueSplit":"$=1-$difftorquesplit_C", "friction":0.6, "dynamicFriction":0.00043, "torqueLossCoef":0.0116, "uiName":"Center Differential","defaultVirtualInertia":0.1,"speedLimitCoef":0.1}],
+            ["differential", "differential_F", "transfercase", 2, {"diffType":"lsd", "lsdPreload":"$lsdpreload_F", "lsdLockCoef":"$lsdlockcoef_F", "lsdRevLockCoef":"$lsdlockcoefrev_F", "friction":0.6, "dynamicFriction":0.00043, "torqueLossCoef":0.0116, "uiName":"Front Differential","defaultVirtualInertia":0.1,"speedLimitCoef":0.1}],
+            ["differential", "differential_R", "transfercase", 1, {"diffType":"lsd", "lsdPreload":"$lsdpreload_R", "lsdLockCoef":"$lsdlockcoef_R", "lsdRevLockCoef":"$lsdlockcoefrev_R", "friction":0.6, "dynamicFriction":0.00043, "torqueLossCoef":0.0116, "uiName":"Rear Differential","defaultVirtualInertia":0.1,"speedLimitCoef":0.1}],
+
+            ["shaft", "wheelaxleFL", "differential_F", 1, {"deformGroups":["wheelaxleFL"], "breakTriggerBeam":"halfshaft_FL", "uiName":"Front Left Halfshaft", "friction":1.69, "dynamicFriction":0.0042}],
+            ["shaft", "wheelaxleFR", "differential_F", 2, {"deformGroups":["wheelaxleFR"], "breakTriggerBeam":"halfshaft_FR", "uiName":"Front Right Halfshaft", "friction":1.69, "dynamicFriction":0.0042}],
+
+            ["shaft", "wheelaxleRL", "differential_R", 1, {"deformGroups":["wheelaxleRL"], "breakTriggerBeam":"halfshaft_RL", "uiName":"Rear Left Halfshaft", "friction":1.69, "dynamicFriction":0.0042}],
+            ["shaft", "wheelaxleRR", "differential_R", 2, {"deformGroups":["wheelaxleRR"], "breakTriggerBeam":"halfshaft_RR", "uiName":"Rear Right Halfshaft", "friction":1.69, "dynamicFriction":0.0042}],
+        ],
+        "differential_R" : {
+            "gearRatio":3.5,
+        },
+        "differential_F" : {
+            "gearRatio":3.5,
+        },
+    },
+    "semi_turbo_600": {
+        "information":{
+            "authors":"BeamNG",
+            "name":"T600 Turbocharger",
+            "value":8000,
+        },
+        "slotType" : "legran_intake_v6",
+        "turbocharger": {
+            "bovSoundFileName":"event:>Vehicle>Forced_Induction>turbo_semi_01>turbo_bov",
+            "hissLoopEvent":"event:>Vehicle>Forced_Induction>turbo_semi_01>turbo_hiss",
+            "whineLoopEvent":"event:>Vehicle>Forced_Induction>turbo_semi_01>turbo_spin",
+            "bovEnabled":false,
+            "bovSoundVolumeCoef": 0.0,
+            "hissVolumePerPSI": 0.0,
+            "whineVolumePer10kRPM": 0.09,
+            "whinePitchPer10kRPM": 0.074,
+            "wastegateStart":55,
+            "wastegateLimit":57,
+            "maxExhaustPower": 35000,
+            "backPressureCoef": 0.00006,
+            "frictionCoef": 23,
+            "inertia":25,
+            "damageThresholdTemperature": 850,
+            "pressurePSI":[
+                //turbineRPM, pressure(PSI)
+                [0,          0],
+                [30000,      8],
+                [60000,     20],
+                [90000,     39],
+                [150000,    69],
+                [200000,    78],
+                [250000,    87],
+                [300000,    93],
+            ],
+            "engineDef":[
+                //engineRPM, efficiency, exhaustFactor
+                [0,     0.2,    0.1],
+                [250,   1,    1],
+                // [500,   0.8,    0.2],
+                // [800,   0.9,    0.9],
+                // [1400,  0.95,   0.9],
+                // [2000,  0.85,   0.8],
+                // [2500,  0.6,    0.6],
+                [7000,  1,    1],
+            ],
+        },
+        "mainEngine": {
+            //turbocharger name
+            "turbocharger":"turbocharger",
+            "$+particulates":0.4,
+            "maxTorqueRating":5000,
+            "burnEfficiency":0.8
+        },
+    },
+}

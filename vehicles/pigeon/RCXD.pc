@@ -1,0 +1,60 @@
+{
+"vars":{
+  "$steer_center":0.999,
+  "$trackwidth_R":0
+},
+"format":2,
+"model":"pigeon",
+"colors":[
+  [
+    0.24,
+    0.48,
+    0.48,
+    1.4
+  ],
+  [
+    0.24,
+    0.48,
+    0.48,
+    1.4
+  ],
+  [
+    0.24,
+    0.48,
+    0.48,
+    1.4
+  ]
+],
+"parts":{
+  "pigeon_wheel_R":"pigeon_wheel_R",
+  "pigeon_driveshaft_R":"pigeon_driveshaft_R",
+  "pigeon_transmission":"sunburst_transmission_6M",
+  "pigeon_bumper_R":"none",
+  "pigeon_spring_R":"pigeon_spring_R",
+  "pigeon_bumper_F":"none",
+  "pigeon_shock_R":"pigeon_shock_R",
+  "pigeon_brake_R":"pigeon_brake_R",
+  "paint_design":"none",
+  "pigeon_bed":"none",
+  "pigeon_fueltank":"pigeon_fueltank",
+  "brakepad_R":"brakepad_R",
+  "licenseplate_design_2_1":"none",
+  "pigeon_brake_F":"pigeon_brake_F",
+  "pigeon_coilover_F":"pigeon_coilover_F",
+  "pigeon_frame":"pigeon_frame",
+  "pigeon_wheel_F":"pigeon_wheel_F",
+  "pigeon_engine":"pigeon_engine",
+  "pigeon_differential_R":"pigeon_differential_R",
+  "brakepad_F":"brakepad_F",
+  "pigeon_suspension_F":"pigeon_suspension_F",
+  "pigeon_suspension_R":"pigeon_axle_R",
+  "pigeon_radiator":"pigeon_radiator",
+  "sunburst_intake":"sunburst_turbo_stage5",
+  "pigeon_body":"none",
+  "pigeon_steering":"pigeon_steering",
+  "pigeon_steer":"none",
+  "pigeon_towhitch":"none",
+  "pigeon_exhaust":"none",
+  "pigeon_sparetire":"none"
+}
+}

@@ -1,0 +1,14 @@
+{
+    "sunburst_karostPowertrain": {
+        "information":{
+            "authors":"BeamNG",
+            "name":"karostPowertrain",
+            "value":1000
+        },
+        "slotType" : "sunburst_mod",
+        "controller" : [
+            ["filename"],
+            ["karostPowertrain"]
+        ],
+    },
+}

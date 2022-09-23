@@ -1,0 +1,113 @@
+{
+"etki_radiator_UHC": {
+    "information":{
+        "authors":"BeamNG",
+        "name":"UHC Performance Radiator",
+        "value":870,
+    },
+    "slotType" : "etki_radiator",
+    "flexbodies": [
+         ["mesh", "[group]:", "nonFlexMaterials"],
+         ["etki_radtube", ["etki_engine","etki_radiator"]],
+         ["etki_radiator", ["etki_radiator"]],
+    ],
+    "mainEngine":{
+        "radiatorArea":0.34,
+        "radiatorEffectiveness":26000,
+        "coolantVolume":9,
+        "radiatorFanType":"electric",
+        "radiatorFanTemperature":100,
+        "radiatorFanMaxAirSpeed":3,
+        "thermostatTemperature":90,
+        "radiatorFanLoopEvent": "event:>Vehicle>Cooling Fan>Electric_05",
+        "radiatorFanVolume": 0.6,
+
+        //damage deformGroups
+        "deformGroups_radiator":["radiator_damage", "radhose_damage"],
+        },
+    "nodes": [
+         ["id", "posX", "posY", "posZ"],
+         //radiator
+         {"frictionCoef":0.5},
+         {"nodeMaterial":"|NM_METAL"},
+         {"selfCollision":false},
+         {"collision":true},
+         {"group":"etki_radiator"},
+         {"nodeWeight":2.7},
+         {"engineGroup":"radiator"},
+         {"chemEnergy":200,"burnRate":0.4"flashPoint":250,"specHeat":0.8,"smokePoint":150,"selfIgnitionCoef":false},
+         ["rad1", 0.0, -1.8, 0.7],
+         {"chemEnergy":false,"burnRate":false,"flashPoint":false,"specHeat":false,"smokePoint":false,"selfIgnitionCoef":false},
+         ["rad2", 0.0, -1.8, 0.3],
+         {"engineGroup":""},
+         {"group":""},
+    ],
+    "beams": [
+          ["id1:", "id2:"],
+          {"beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+          {"beamSpring":1000000,"beamDamp":150},
+          {"beamDeform":7500,"beamStrength":"FLT_MAX"},
+          {"deformGroup":"radiator_damage","deformationTriggerRatio":0.05},
+          //radiator
+          {"deformLimitExpansion":""},
+          ["rad2", "rad1"],
+          ["rad1", "f15"],
+          ["rad1", "f15r"],
+          ["rad1", "f13rr"],
+          ["rad1", "f11rr"],
+          ["rad1", "f15l"],
+          ["rad1", "f13ll"],
+          ["rad1", "f11ll"],
+          ["rad2", "f11"],
+          ["rad2", "f11ll"],
+          ["rad2", "f11rr"],
+          ["rad2", "f13ll"],
+          ["rad2", "f13rr"],
+          //to engine
+          {"beamSpring":14000,"beamDamp":300},
+          {"beamDeform":1450,"beamStrength":3600},
+          {"optional":true},
+          //duplicate beams for better flexbody breaking
+          ["rad1","e4r"],
+          ["rad1","e4l"],
+          ["rad1","e4r"],
+          ["rad1","e4l"],
+          //tube
+          ["rad2","e4l"],
+          {"optional":false},
+          {"deformGroup":""},
+          {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+    ],
+},
+"etki_engine_internals_uhc": {
+    "information":{
+        "authors":"BeamNG",
+        "name":"UHC Performance Long Block",
+        "value":3600,
+    },
+    "slotType" : "etki_engine_internals",
+    "mainEngine":{
+        "torqueModMult":[
+            ["rpm", "torque"],
+            [0,       1],
+            [1000, 0.82],
+            [2500, 0.79],
+            [4000, 0.91],
+            [5000, 1.1],
+            [6000, 1.28],
+            [7000, 1.65],
+            [8000, 2.0],
+        ],
+        //max rpm physically capable of
+        "$+maxRPM":2200,
+        "$*friction":0.95,
+        "$*dynamicFriction":0.90,
+        "$*inertia":0.95,
+        "$*engineBrakeTorque":1.25,
+        //engine durability
+        "cylinderWallTemperatureDamageThreshold":220,
+        "$*maxTorqueRating": 2.6,
+        "$*maxOverTorqueDamage": 1.8,
+    },
+},
+}

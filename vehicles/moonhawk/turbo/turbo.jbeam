@@ -1,0 +1,176 @@
+{
+    "semi_turbo_600": {
+        "information":{
+            "authors":"BeamNG",
+            "name":"T600 Turbocharger",
+            "value":8000,
+        },
+        "slotType" : "moonhawk_intake_i6",
+        "flexbodies": [
+             ["mesh", "[group]:", "nonFlexMaterials"],
+             ["semi_turbo", ["semi_engine"]],
+        ],
+        "turbocharger": {
+            "bovSoundFileName":"event:>Vehicle>Forced_Induction>turbo_semi_01>turbo_bov",
+            "hissLoopEvent":"event:>Vehicle>Forced_Induction>turbo_semi_01>turbo_hiss",
+            "whineLoopEvent":"event:>Vehicle>Forced_Induction>turbo_semi_01>turbo_spin",
+            "bovEnabled":false,
+            "bovSoundVolumeCoef": 0.0,
+            "hissVolumePerPSI": 0.0,
+            "whineVolumePer10kRPM": 0.09,
+            "whinePitchPer10kRPM": 0.0675,
+            "wastegateStart":28,
+            "wastegateLimit":29,
+            "maxExhaustPower": 35000,
+            "backPressureCoef": 0.00006,
+            "frictionCoef": 23,
+            "inertia":25,
+            "damageThresholdTemperature": 850,
+            "pressureRatePSI":1000,
+            "pressurePSI":[
+                //turbineRPM, pressure(PSI)
+                [0,          0],
+                [50000,    0],
+                [75000,    7.15],
+                [200000,    30],
+            ],
+            "engineDef":[
+                //engineRPM, efficiency, exhaustFactor
+                [0,     0.2,    0.1],
+                [250,   0.6,    0.1],
+                [500,   0.8,    0.2],
+                [800,   0.9,    0.9],
+                [3000,  0.95,   0.9],
+                [4000,  0.95,   0.99],
+                [4500,  0.6,    0.6],
+                [5000,  0.2,    0.3],
+            ],
+        },
+        "mainEngine": {
+            //turbocharger name
+            "turbocharger":"turbocharger",
+            "$+particulates":0.4,
+            "$*maxTorqueRating":100,
+        },
+    },
+    "semi_turbo_600_v8": {
+        "information":{
+            "authors":"BeamNG",
+            "name":"T600 Turbocharger",
+            "value":8000,
+        },
+        "slotType" : "moonhawk_intake_v8",
+        "flexbodies": [
+             ["mesh", "[group]:", "nonFlexMaterials"],
+             ["semi_turbo", ["semi_engine"]],
+        ],
+        "turbocharger": {
+            "flutterSoundFileName":"event:>Vehicle>Forced_Induction>Turbo_04>turbo_bov",
+            "hissLoopEvent":"event:>Vehicle>Forced_Induction>turbo_semi_01>turbo_hiss",
+            "whineLoopEvent":"event:>Vehicle>Forced_Induction>turbo_semi_01>turbo_spin",
+            "bovEnabled":false,
+            "bovSoundVolumeCoef": 0.0,
+            "hissVolumePerPSI": 0.0,
+            "whineVolumePer10kRPM": 0.09,
+            "whinePitchPer10kRPM": 0.0675,
+            "flutterSoundVolumeCoef": 1,
+            "wastegateStart":100,
+            "wastegateLimit":101.5,
+            "maxExhaustPower": 35000,
+            "backPressureCoef": 0.00006,
+            "frictionCoef": 23,
+            "inertia":25,
+            "damageThresholdTemperature": 850,
+            "pressureRatePSI":1000,
+            "pressurePSI":[
+                //turbineRPM, pressure(PSI)
+                [0,          0],
+                [50000,    0],
+                [75000,    7.15],
+                [200000,    102],
+            ],
+            "engineDef":[
+                //engineRPM, efficiency, exhaustFactor
+                [0,     0.2,    0.1],
+                [250,   0.6,    0.1],
+                [500,   0.8,    0.2],
+                [800,   0.9,    0.9],
+                [3000,  0.95,   0.9],
+                [5000,  0.95,   0.99],
+                [5500,  0.6,    0.6],
+                [6000,  0.2,    0.3],
+            ],
+        },
+        "mainEngine": {
+            //turbocharger name
+            "turbocharger":"turbocharger",
+            "$+particulates":0.4,
+            "$*maxTorqueRating":100,
+
+            "burnEfficiency":0.99,
+
+            "$+instantAfterFireCoef": 2.5,
+            "$+sustainedAfterFireCoef": 2,
+
+            "$+inertia":0.4,
+            "$+dynamicFriction":0.12,
+
+            // "thermalsEnabled":false
+        },
+    },
+
+    "moonhawk_transfer_case_AWD_race": {
+        "information":{
+            "authors":"BeamNG",
+            "name":"Race AWD Transfer Case",
+            "value":3500,
+        },
+        "slotType" : "moonhawk_differential_R",
+        "controller" : [
+            ["filename"],
+            ["karostPowertrain"]
+        ],
+        "variables": [
+            ["name", "type", "unit", "category", "default", "min", "max", "title", "description"],
+            ["$finaldrive_C", "range", ":1", "Differentials", 2.5, 2.0, 6.0, "Final Drive Gear Ratio", "Torque multiplication ratio", {"subCategory":"Center"}],
+            ["$difftorquesplit_C", "range", "%", "Differentials", 0.65, 0.20, 0.80, "Base Torque Split", "Percent of engine torque to front wheels", {"minDis":20, "maxDis":80, "stepDis":1, "subCategory":"Center"}],
+            ["$lsdpreload_C", "range", "N/m", "Differentials", 25, 0, 250, "Pre-load Torque", "Initial locking torque between front and rear axles", {"subCategory":"Center"}],
+            ["$lsdlockcoef_C", "range", "", "Differentials", 0.125, 0, 0.5, "Power Lock Rate", "Additional locking torque proportional to engine torque", {"minDis":0, "maxDis":100, "subCategory":"Center"}],
+            ["$lsdlockcoefrev_C", "range", "", "Differentials", 0.02, 0, 0.5, "Coast Lock Rate", "Additional locking torque proportional to engine braking", {"minDis":0, "maxDis":100, "subCategory":"Center"}],
+
+            ["$lsdpreload_R", "range", "N/m", "Differentials", 40, 0, 500, "Pre-load Torque", "Initial locking torque between left and right wheels", {"subCategory":"Rear"}],
+            ["$lsdlockcoef_R", "range", "", "Differentials", 0.3, 0, 0.5, "Power Lock Rate", "Additional locking torque proportional to engine torque", {"minDis":0, "maxDis":100, "subCategory":"Rear"}],
+            ["$lsdlockcoefrev_R", "range", "", "Differentials", 0, 0, 0.5, "Coast Lock Rate", "Additional locking torque proportional to engine braking", {"minDis":0, "maxDis":100, "subCategory":"Rear"}],
+
+            ["$lsdpreload_F", "range", "N/m", "Differentials", 40, 0, 500, "Pre-load Torque", "Initial locking torque between left and right wheels", {"subCategory":"Front"}],
+            ["$lsdlockcoef_F", "range", "", "Differentials", 0.3, 0, 0.5, "Power Lock Rate", "Additional locking torque proportional to engine torque", {"minDis":0, "maxDis":100, "subCategory":"Front"}],
+            ["$lsdlockcoefrev_F", "range", "", "Differentials", 0, 0, 0.5, "Coast Lock Rate", "Additional locking torque proportional to engine braking", {"minDis":0, "maxDis":100, "subCategory":"Front"}],
+        ],
+        "powertrain" : [
+            ["type", "name", "inputName", "inputIndex"],
+            ["differential", "transfercase", "gearbox", 1, {"diffType":"lsd", "lsdPreload":"$lsdpreload_C", "lsdLockCoef":"$lsdlockcoef_C", "lsdRevLockCoef":"$lsdlockcoefrev_C", "diffTorqueSplit":"$=1-$difftorquesplit_C", "friction":0.6, "dynamicFriction":0.00043, "torqueLossCoef":0.0116, "uiName":"Center Differential","defaultVirtualInertia":0.1,"speedLimitCoef":0.1,"gearRatio":"$finaldrive_C"}],
+            ["differential", "differential_F", "transfercase", 2, {"diffType":"lsd", "lsdPreload":"$lsdpreload_F", "lsdLockCoef":"$lsdlockcoef_F", "lsdRevLockCoef":"$lsdlockcoefrev_F", "friction":0.6, "dynamicFriction":0.00043, "torqueLossCoef":0.0116, "uiName":"Front Differential","defaultVirtualInertia":0.1,"speedLimitCoef":0.1}],
+            ["differential", "differential_R", "transfercase", 1, {"diffType":"lsd", "lsdPreload":"$lsdpreload_R", "lsdLockCoef":"$lsdlockcoef_R", "lsdRevLockCoef":"$lsdlockcoefrev_R", "friction":0.6, "dynamicFriction":0.00043, "torqueLossCoef":0.0116, "uiName":"Rear Differential","defaultVirtualInertia":0.1,"speedLimitCoef":0.1}],
+        ],
+        "differential_R" : {
+            "gearRatio":1,
+        },
+        "differential_F" : {
+            "gearRatio":1,
+        },
+        "props": [
+            ["func"      , "mesh"               , "idRef:", "idX:", "idY:", "baseRotation"           , "rotation"            , "translation"        , "min", "max", "offset", "multiplier"],
+            ["driveshaft", "moonhawk_driveshaft", "ax3r"  , "ax3l", "tra1", {"x":-86.5, "y":0, "z":0}, {"x":0, "y":1, "z":0} , {"x":0, "y":0, "z":0}, -360 , 360  , 0       , 1           ,{"breakGroup":"driveshaft","deformGroup":"driveshaft","optional":true}],
+        ],
+        "beams": [
+              ["id1:", "id2:"],
+              //driveshaft
+              {"beamPrecompression":1, "beamType":"|BOUNDED", "beamLongBound":0.02, "beamShortBound":0.02},
+              {"beamDeform":4500,"beamStrength":5500},
+              {"beamSpring":0,"beamDamp":0},
+              {"beamLimitSpring":5001000,"beamLimitDamp":250},
+              ["ax3","tra1", {"name":"driveshaft","optional":true,"breakGroup":"driveshaft","deformGroup":"driveshaft"}],
+              {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+        ],
+    },
+}

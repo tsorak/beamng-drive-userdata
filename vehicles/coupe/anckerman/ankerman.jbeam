@@ -1,0 +1,112 @@
+{
+    "coupe_steering_jigadrift": {
+        "information":{
+            "authors":"BeamNG",
+            "name":"JIGADrift Steering",
+            "value":750,
+        },
+        "slotType" : "coupe_steering",
+        "slots": [
+            ["type", "default", "description"],
+            ["coupe_power_steering","", "Power Steering"],
+        ],
+        "flexbodies": [
+            ["mesh", "[group]:", "nonFlexMaterials"],
+            ["coupe_tierod_F", ["coupe_tierod_F","coupe_hub_F"]],
+        ],
+        "rails": {
+            "steeringrack":{
+                "links:":["fh6r", "fh6l"], "broken:":[], "looped":false, "capped":true,
+            },
+        },
+        "slidenodes": [
+            ["id:", "railName", "attached", "fixToRail", "tolerance", "spring", "strength", "capStrength"],
+            ["fx5r", "steeringrack", true, true, 0.0, 15001000, "FLT_MAX", "FLT_MAX"],
+            ["fx5l", "steeringrack", true, true, 0.0, 15001000, "FLT_MAX", "FLT_MAX"],
+        ],
+        "variables": [
+            ["name", "type", "unit", "category", "default", "min", "max", "title", "description"],
+            ["$toe_FR", "range", "", "Wheel Alignment", 1.000, 0.99, 1.01, "Toe Adjust", "Adjusts the wheel toe-in angle", {"subCategory":"Front"}],
+            ["$steer_center_F", "range", "", "Wheel Alignment", 0, -0.002, 0.002, "Steering L/R Trim", "Fine tunes the centerpoint of the steering", {"subCategory":"Front"}]
+        ],
+        "nodes": [
+            ["id", "posX", "posY", "posZ"],
+            //--steering rod--
+            {"selfCollision":false},
+            {"collision":true},
+            {"nodeMaterial":"|NM_METAL"},
+            {"frictionCoef":0.5},
+            {"group":"coupe_tierod_F"},
+            {"nodeWeight":5.25},
+            ["fh6r", -0.28, -1.15, 0.275],
+            ["fh6l", 0.28, -1.15, 0.275],
+            //tie rod end overwrites hub
+            {"selfCollision":false},
+            {"nodeWeight":5.25},
+            ["fh3r",-0.65, -1.135, 0.280, {"group":["coupe_tierod_F","coupe_hub_F"]}],
+            ["fh3l", 0.65, -1.135, 0.280, {"group":["coupe_tierod_F","coupe_hub_F"]}],
+
+            //steering box/tie rod end
+            {"nodeWeight":5.5},
+            {"group":"coupe_steeringbox"},
+            {"chemEnergy":200,"burnRate":0.5,"flashPoint":400,"specHeat":0.8,"smokePoint":150,"selfIgnitionCoef":false},
+            //steering jbeam can relocate
+            ["fx5r", -0.18, -1.15, 0.275],
+            ["fx5l", 0.18, -1.15, 0.275],
+            {"chemEnergy":false,"burnRate":false,"flashPoint":false,"specHeat":false,"smokePoint":false,"selfIgnitionCoef":false},
+            {"group":""},
+        ],
+        "beams": [
+                ["id1:","id2:"],
+                //tie rods
+                {"beamPrecompression":1.0, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+                {"beamSpring":10001000,"beamDamp":100,"beamDeform":101500,"beamStrength":125000},
+                ["fh6r","fh6l"],
+                {"beamSpring":18001000,"beamDamp":100},
+                {"beamDeform":80000,"beamStrength":150000},
+                ["fh3r","fh6r", {"beamPrecompression":"$=$toe_FR+$steer_center_F","beamPrecompressionTime":0.5}],
+                ["fh3l","fh6l", {"beamPrecompression":"$=$toe_FR-$steer_center_F","beamPrecompressionTime":0.5}],
+
+                //steering damper
+                {"beamPrecompression":1.0, "beamType":"|BOUNDED", "beamLongBound":5.0, "beamShortBound":5.0},
+                {"beamLimitSpring":0,"beamLimitDamp":0},
+                {"beamSpring":0},
+                {"beamDamp":60},
+                ["fh3r","fx1r", {"beamDampVelocitySplit":0.2,"beamDampFast":1500,"dampCutoffHz":500}],
+                ["fh3l","fx1l", {"beamDampVelocitySplit":0.2,"beamDampFast":1500,"dampCutoffHz":500}],
+                ["fh5r","fx2r", {"beamDampVelocitySplit":0.2,"beamDampFast":1500,"dampCutoffHz":500}],
+                ["fh5l","fx2l", {"beamDampVelocitySplit":0.2,"beamDampFast":1500,"dampCutoffHz":500}],
+
+                //anti shake at full lock
+                {"beamPrecompression":1.0, "beamType":"|BOUNDED", "beamLongBound":1.0, "beamShortBound":1.0},
+                {"beamDeform":15000,"beamStrength":42000},
+                {"beamLimitSpring":0},
+                {"beamSpring":0},
+                {"optional":true},
+                ["fh3r","fx1r", {"longBoundRange":5,"shortBoundRange":50.07,"boundZone":0.02,"beamDamp":0,"beamDampRebound":0,"beamLimitDamp":3000,"beamLimitDampRebound":1000,"dampCutoffHz":500}],
+                ["fh3l","fx1l", {"longBoundRange":5,"shortBoundRange":50.07,"boundZone":0.02,"beamDamp":0,"beamDampRebound":0,"beamLimitDamp":3000,"beamLimitDampRebound":1000,"dampCutoffHz":500}],
+                {"optional":false},
+                {"beamPrecompression":1.0, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+        ],
+        "triangles": [
+            ["id1:","id2:","id3:"],
+            {"triangleType":"NONCOLLIDABLE"},
+            ["fx2r", "fx5r", "fx2l"],
+            ["fx5r", "fx5l", "fx2l"],
+            ["fh6l", "fx2l", "fx5l"],
+            ["fx5r", "fx2r", "fh6r"],
+            {"triangleType":"NORMALTYPE"},
+        ],
+        "hydros": [
+                ["id1:","id2:"],
+                {"beamPrecompression":1.0, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+                {"beamSpring":10001000,"beamDamp":50,"beamDeform":"FLT_MAX","beamStrength":92500},
+                ["fh3l","fx5l", {"beamStrength":"FLT_MAX","factor":0.215,"steeringWheelLock":450,"inRate":1.25,"outRate":1.25}],
+                ["fh3r","fx5r", {"beamStrength":"FLT_MAX","factor":-0.215,"steeringWheelLock":450,"inRate":1.25,"outRate":1.25}],
+                {"beamPrecompression":1.0, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+        ],
+        "input": {
+            "FFBcoef":"$=$ffbstrength*13",
+        },
+    },
+}

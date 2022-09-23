@@ -1,0 +1,204 @@
+{
+    "covet_turbo_midengine_ko_twin": {
+        "information":{
+            "authors":"BeamNG",
+            "name":"KO Twin Turbochargers",
+            "value":7700,
+        },
+        "slotType" : "covet_intake_midengine",
+        "variables": [
+            ["name", "type", "unit", "category", "default", "min", "max", "title", "description"],
+            ["$wastegateStart", "range", "psi", "Engine", 12, 12, 35, "Wastegate Pressure", "Pressure at which the wastegate begins to open", {"stepDis":0.5}],
+        ],
+        "turbocharger": {
+            "bovSoundFileName":"event:>Vehicle>Forced_Induction>Turbo_07_cabin>turbo_bov_race",
+            "hissLoopEvent":"event:>Vehicle>Forced_Induction>Turbo_05_cabin>turbo_hiss_race",
+            "whineLoopEvent":"event:>Vehicle>Forced_Induction>Turbo_07_cabin>turbo_spin_race",
+            "turboSizeCoef": 1,
+            "bovSoundVolumeCoef": 0.8,
+            "hissVolumePerPSI": 0.034,
+            "whineVolumePer10kRPM": 0.0070,
+            "whinePitchPer10kRPM": 0.05,
+            "wastegateStart":"$wastegateStart",
+            "wastegateLimit":"$=$wastegateStart+1",
+            "maxExhaustPower": 18000,
+            "backPressureCoef": 0.00003,
+            "frictionCoef": 25,
+            "inertia":2.6,
+            "damageThresholdTemperature": 730,
+            "pressureRatePSI":500,
+            "pressurePSI":[
+                //turbineRPM, pressure(PSI)
+                [0,         -4.5],
+                [30000,     -1.5],
+                [60000,     8],
+                [90000,     16],
+                [150000,    24],
+                [200000,    32],
+                [250000,    38],
+            ],
+            "engineDef":[
+                //engineRPM, efficiency, exhaustFactor
+                [0,     0.0,    0.0],
+                [1000,     1.0,    1.0],
+                [11000,     1.0,    1.0],
+                // [650,   0.10,   0.08],
+                // [1400,  0.12,   0.10],
+                // [2000,  0.20,    0.20],
+                // [2500,  0.40,    0.30],
+                // [3000,  0.64,    0.55],
+                // [3500,  0.84,    0.68],
+                // [4000,  0.88,    0.93],
+                // [5000,  0.92,    0.95],
+                // [6000,  0.95,    0.96],
+                // [7000,  0.96,    0.98],
+                // [8000,  0.98,    1.0],
+                // [9000,  0.87,    1.0],
+                // [10000, 0.65,    1.0],
+                // [11000, 0.55,    1.0],
+            ],
+        },
+        "mainEngine": {
+            //turbocharger name
+            "turbocharger":"turbocharger",
+            "$*instantAfterFireCoef": 2.5,
+            "$*sustainedAfterFireCoef": 2.00,
+    
+            //damage deformGroups
+            "deformGroups_turbo":["mainEngine_turbo_R","mainEngine_intercooler_R"]
+        },
+        "soundConfig": {
+            "$+maxLoadMix": 0.1,
+            "$+intakeMuffling":-0.2,
+            "$+mainGain":1.5,
+            "$+eqLowGain": 1.5,
+        },
+        "soundConfigExhaust": {
+            "$+maxLoadMix": 0.1,
+            "$+minLoadMix": 0.01,
+            "$+mainGain": 0.5,
+            "$+offLoadGain": 0.00,
+            "$+eqLowGain": 0.25,
+            "$+eqFundamentalGain": 0.5,
+        },
+        "vehicleController": {
+            "clutchLaunchStartRPM":2100,
+            "clutchLaunchTargetRPM":4200,
+            //**highShiftDown can be overwritten by automatic transmissions**
+            "highShiftDownRPM":[0,0,0,2700,3350,3600,3800,3800],
+            //**highShiftUp can be overwritten by intake modifications**
+            "highShiftUpRPM":6800,
+            "revMatchThrottle":0.35,
+        },
+        "flexbodies": [
+            ["mesh", "[group]:", "nonFlexMaterials"],
+            ["covet_intercooler_midengine", ["covet_intercooler_midengine"]],
+            ["covet_podfilter_midengine", ["covet_intercooler_midengine"]],
+            ["covet_header_turbo_midengine", ["covet_engine_mid","covet_turbo"]],
+            ["covet_intake_midengine", ["covet_engine_mid","covet_engine_intake"]],
+            {"deformGroup":"mainEngine_chargepipe_R", "deformMaterialBase":"covet_mechanical", "deformMaterialDamaged":"invis"},
+            ["covet_icpipe_a_midengine", ["covet_intercooler_midengine","covet_engine_intake"]],
+            ["covet_icpipe_b_midengine", ["covet_intercooler_midengine","covet_turbo"]],
+            ["covet_intakepipe_midengine", ["covet_intercooler_midengine","covet_engine_intake"]],
+            {"deformGroup":""},
+            ],
+        "nodes": [
+             ["id", "posX", "posY", "posZ"],
+             {"selfCollision":false},
+             {"collision":false},
+             //intake
+             {"frictionCoef":0.5},
+             {"nodeMaterial":"|NM_METAL"},
+             {"nodeWeight":3.5},
+             {"group":["covet_engine_mid","covet_engine_intake"]},
+             ["intck1l",0.25,0.556,0.701],
+             ["intck2l",0.25,1.033,0.701],
+             {"engineGroup":""},
+    
+             //turbos
+             {"nodeWeight":2.0},
+             ["trb1r",0.18,1.20,0.505, {"group":"covet_turbo"}],
+             ["trb2r",0.18,1.35,0.505, {"group":"covet_turbo", "afterFireAudioCoef":1.0, "afterFireVisualCoef":1.0, "afterFireVolumeCoef":1.0, "afterFireMufflingCoef":1.0, "exhaustAudioMufflingCoef":1.0, "exhaustAudioGainChange":0}],
+    
+             //intercoolers
+             {"nodeWeight":3.0},
+             {"selfCollision":true},
+             {"collision":true},
+             ["ic1l",0.809,0.762,0.461, {"group":"covet_intercooler_midengine"}],
+             {"group":""},
+        ],
+        "beams": [
+              ["id1:", "id2:"],
+              {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+              //intake
+              {"deformLimitExpansion":1.2},
+              {"beamSpring":3500940,"beamDamp":235},
+              {"beamDeform":105000,"beamStrength":"FLT_MAX"},
+    
+              ["intck2l", "intck1l"],
+              ["intck2l", "e4r"],
+              ["e4r", "intck1l"],
+              ["intck1l", "e3r"],
+              ["intck2l", "e3r"],
+              ["intck2l", "e4l"],
+              ["e4l", "intck1l"],
+              ["intck1l", "e3l"],
+              ["e3l", "intck2l"],
+              ["intck2l", "e2l"],
+              ["e2l", "intck1l"],
+              ["intck1l", "e1l"],
+              ["e1l", "intck2l"],
+              ["intck2l", "e2r"],
+              ["e2r", "intck1l"],
+              ["intck1l", "e1r"],
+              ["e1r", "intck2l"],
+    
+              //turbo
+              {"beamSpring":3000000,"beamDamp":130},
+              {"beamDeform":90000,"beamStrength":"FLT_MAX"},
+              {"deformGroup":"mainEngine_turbo_R", "deformationTriggerRatio":0.001}
+              ["trb1r", "e3l"],
+              ["trb1r", "e4l"],
+              ["trb1r", "e3r", {"isExhaust":"mainEngine"}],
+              ["trb1r", "e4r"],
+              ["trb1r", "e1l"],
+              ["trb1r", "e2l"],
+              ["trb1r", "e1r"],
+              ["trb1r", "e2r"],
+              ["trb2r", "e3l"],
+              ["trb2r", "e4l"],
+              ["trb2r", "e3r"],
+              ["trb2r", "e4r"],
+              ["trb2r", "e1l"],
+              ["trb2r", "e2l"],
+              ["trb2r", "e1r"],
+              ["trb2r", "e2r"],
+              ["trb2r", "trb1r", {"isExhaust":"mainEngine"}]
+              {"deformGroup":""}
+    
+              //intercooler
+              {"beamSpring":2000000,"beamDamp":130},
+              {"beamDeform":15000,"beamStrength":"FLT_MAX"},
+              {"deformGroup":"mainEngine_intercooler_R", "deformationTriggerRatio":0.02}
+              ["ic1l", "f3ll"],
+              ["ic1l", "f4ll"],
+              ["ic1l", "q5l"],
+              ["ic1l", "q6l"],
+              ["ic1l", "q1l"],
+              ["ic1l", "q2ll"],
+    
+              ["ic1l", "f8l"],
+              ["ic1l", "rx3l"],
+    
+              //charge pipes
+              {"beamSpring":50000,"beamDamp":130},
+              {"beamDeform":10000,"beamStrength":20000},
+              {"deformGroup":"mainEngine_chargepipe_R", "deformationTriggerRatio":0.02}
+              ["ic1l", "trb1r"],
+              ["ic1l", "intck1l"],
+              ["ic1l", "intck2l"],
+              {"deformGroup":""}
+              {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+        ],
+    },
+}
