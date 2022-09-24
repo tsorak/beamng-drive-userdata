@@ -7,12 +7,11 @@ local M = {}
 local max = math.max
 local min = math.min
 local abs = math.abs
+local fsign = fsign
 
 local constants = {rpmToAV = 0.104719755, avToRPM = 9.549296596425384}
 
 local newDesiredGearIndex = 0
-local previousGearIndex = 0
-local shiftAggression = 1
 local gearbox = nil
 local engine = nil
 
@@ -34,10 +33,9 @@ M.minGearIndex = 0
 M.throttle = 0
 M.brake = 0
 M.clutchRatio = 0
-M.shiftingAggression = 0
+M.shiftingAggression = 1
 M.isArcadeSwitched = false
 M.isSportModeActive = false
-M.isShifting = false
 
 M.smoothedAvgAVInput = 0
 M.rpm = 0
@@ -60,17 +58,16 @@ M.checkEngine = false
 M.energyStorages = {}
 
 local clutchHandling = {
-  clutchInRate = 5,
-  clutchOutRate = 5,
   clutchLaunchTargetAV = 0,
   clutchLaunchStartAV = 0,
   clutchLaunchIFactor = 0,
-  preShiftClutchRatio = 0,
-  lastClutchInput = 0,
-  shiftState = "clutchIn",
-  revMatchThrottle = 0.5,
-  didRevMatch = false
+  lastClutchInput = 0
 }
+
+local neutralRejectTimer = 0 --used to reject shifts into neutral when using an H shifter
+local neutralRejectTime = 0.75
+
+local ignitionCutTime = 0.15
 
 local function getGearName()
   return gearbox.gearIndex
@@ -92,17 +89,6 @@ local function gearboxBehaviorChanged(behavior)
   end
 end
 
-local function calculateShiftAggression()
-  local gearRatioDifference = abs(gearbox.gearRatios[previousGearIndex] - gearbox.gearRatios[newDesiredGearIndex])
-  local inertiaCoef = linearScale(engine.inertia, 0.1, 0.5, 0.1, 1)
-  local gearRatioCoef = linearScale(gearRatioDifference * inertiaCoef, 0.5, 1, 1, 0.5)
-  local aggressionCoef = linearScale(M.smoothedValues.drivingAggression, 0.5, 1, 0.1, 1)
-
-  shiftAggression = clamp(gearRatioCoef * aggressionCoef, 0.3, 1)
-  M.shiftingAggression = shiftAggression
-  --print(string.format("GR: %.2f, AG: %.2f, IN: %.2f -> %.2f", gearRatioCoef, aggressionCoef, inertiaCoef, shiftAggression))
-end
-
 local function shiftUp()
   local prevGearIndex = gearbox.gearIndex
   local gearIndex = newDesiredGearIndex == 0 and gearbox.gearIndex + 1 or newDesiredGearIndex + 1
@@ -117,15 +103,10 @@ local function shiftUp()
 
   if gearbox.gearIndex ~= gearIndex then
     newDesiredGearIndex = gearIndex
-    gearbox:setGearIndex(newDesiredGearIndex)
     if engine.turbocharger then
       engine.turbocharger.forceBov = true
     end
-    -- previousGearIndex = gearbox.gearIndex
-    -- clutchHandling.shiftState = "clutchIn"
-    -- clutchHandling.preShiftClutchRatio = M.clutchRatio
-    -- calculateShiftAggression()
-    -- M.updateGearboxGFX = gearboxLogic.whileShifting
+    M.updateGearboxGFX = gearboxLogic.whileShifting
   end
 end
 
@@ -143,21 +124,25 @@ local function shiftDown()
 
   if gearbox.gearIndex ~= gearIndex then
     newDesiredGearIndex = gearIndex
-    gearbox:setGearIndex(newDesiredGearIndex)
     if engine.turbocharger then
       engine.turbocharger.forceBov = true
     end
-    -- previousGearIndex = gearbox.gearIndex
-    -- clutchHandling.shiftState = "clutchIn"
-    -- clutchHandling.preShiftClutchRatio = M.clutchRatio
-    -- calculateShiftAggression()
-    -- M.updateGearboxGFX = gearboxLogic.whileShifting
+    M.updateGearboxGFX = gearboxLogic.whileShifting
   end
 end
 
 local function shiftToGearIndex(index)
   local prevGearIndex = gearbox.gearIndex
+  if index == 0 and abs(prevGearIndex) > 1 then
+    return
+  end
   local gearIndex = min(max(index, gearbox.minGearIndex), gearbox.maxGearIndex)
+
+  local maxIndex = min(prevGearIndex + 1, gearbox.maxGearIndex)
+  local minIndex = max(prevGearIndex - 1, gearbox.minGearIndex)
+
+  --adjust expected gearIndex based on sequential limits, otherwise the safety won't work correctly as it will see a 0 gearratio when going into N from higher gears
+  gearIndex = min(max(gearIndex, minIndex), maxIndex)
 
   if M.gearboxHandling.gearboxSafety then
     local gearRatio = gearbox.gearRatios[gearIndex]
@@ -168,11 +153,9 @@ local function shiftToGearIndex(index)
 
   if gearbox.gearIndex ~= gearIndex then
     newDesiredGearIndex = gearIndex
-    previousGearIndex = gearbox.gearIndex
-    M.timer.shiftDelayTimer = 0
-    clutchHandling.shiftState = "clutchIn"
-    clutchHandling.preShiftClutchRatio = M.clutchRatio
-    calculateShiftAggression()
+    if newDesiredGearIndex == 0 then
+      neutralRejectTimer = neutralRejectTime
+    end
     M.updateGearboxGFX = gearboxLogic.whileShifting
   end
 end
@@ -193,6 +176,7 @@ local function updateExposedData()
   M.isEngineRunning = engine and ((engine.isStalled or engine.ignitionCoef <= 0) and 0 or 1) or 1
   M.minGearIndex = gearbox.minGearIndex
   M.maxGearIndex = gearbox.maxGearIndex
+  M.shiftingAggression = 1
 end
 
 local function updateInGearArcade(dt)
@@ -224,14 +208,12 @@ local function updateInGearArcade(dt)
 
     --shift down?
     local rpmTooLow = (tmpEngineAV < M.shiftBehavior.shiftDownAV) or (tmpEngineAV <= engine.idleAV * 1.05)
-    while rpmTooLow and abs(gearIndex) > 1 and M.shiftPreventionData.wheelSlipShiftDown and abs(M.throttle - M.smoothedValues.throttle) < M.smoothedValues.throttleUpShiftThreshold do
+    if rpmTooLow and abs(gearIndex) > 1 and M.shiftPreventionData.wheelSlipShiftDown and abs(M.throttle - M.smoothedValues.throttle) < M.smoothedValues.throttleUpShiftThreshold then
       gearIndex = gearIndex - sign(gearIndex)
       tmpEngineAV = relEngineAV * (gearbox.gearRatios[gearIndex] or 0)
       if tmpEngineAV >= engine.maxAV * 0.85 then
         tmpEngineAV = relEngineAV / (gearbox.gearRatios[gearIndex] or 0)
         gearIndex = gearIndex + sign(gearIndex)
-        sharedFunctions.selectShiftPoints(gearIndex)
-        break
       end
       sharedFunctions.selectShiftPoints(gearIndex)
     end
@@ -255,7 +237,7 @@ local function updateInGearArcade(dt)
 
   -- neutral gear handling
   if abs(gearIndex) <= 1 and M.timer.neutralSelectionDelayTimer <= 0 then
-    if abs(M.smoothedValues.avgAV) < M.gearboxHandling.arcadeAutoBrakeAVThreshold and M.throttle <= 0 then
+    if gearIndex ~= 0 and abs(M.smoothedValues.avgAV) < M.gearboxHandling.arcadeAutoBrakeAVThreshold and M.throttle <= 0 then
       M.brake = max(M.inputValues.brake, M.gearboxHandling.arcadeAutoBrakeAmount)
     end
 
@@ -264,7 +246,7 @@ local function updateInGearArcade(dt)
       M.timer.neutralSelectionDelayTimer = M.timerConstants.neutralSelectionDelay
     end
 
-    if M.smoothedValues.brakeInput > 0 and M.smoothedValues.throttleInput <= 0 and M.smoothedValues.avgAV <= 0.15 and electrics.values.airspeed < 2 and gearIndex > -1 then
+    if M.smoothedValues.brakeInput > 0 and M.smoothedValues.throttleInput <= 0 and M.smoothedValues.avgAV <= 0.15 and gearIndex > -1 then
       gearIndex = -1
       M.timer.neutralSelectionDelayTimer = M.timerConstants.neutralSelectionDelay
     end
@@ -277,9 +259,6 @@ local function updateInGearArcade(dt)
 
   if gearbox.gearIndex ~= gearIndex then
     newDesiredGearIndex = gearIndex
-    previousGearIndex = gearbox.gearIndex
-    clutchHandling.shiftState = "clutchIn"
-    calculateShiftAggression()
     M.updateGearboxGFX = gearboxLogic.whileShifting
   end
 
@@ -318,14 +297,14 @@ local function updateInGearArcade(dt)
     M.timer.gearChangeDelayTimer = M.timerConstants.gearChangeDelay
   end
 
-  clutchHandling.preShiftClutchRatio = M.clutchRatio
   clutchHandling.lastClutchInput = M.inputValues.clutch
+
   M.currentGearIndex = gearIndex
   updateExposedData()
 end
 
 local function updateWhileShiftingArcade(dt)
-  -- old -> N -> wait -> new -> in gear update
+  M.throttle = M.inputValues.throttle
   M.brake = M.inputValues.brake
   M.isArcadeSwitched = false
   M.isShifting = true
@@ -335,52 +314,14 @@ local function updateWhileShiftingArcade(dt)
     M.throttle, M.brake = M.brake, M.throttle
     M.isArcadeSwitched = true
   end
-
-  --set throttle to zero when we are actually shifting, this does not apply when going from N to 1 or -1
-  M.throttle = (abs(gearIndex) <= 1 and abs(newDesiredGearIndex) <= 1) and M.inputValues.throttle or 0
-
-  if clutchHandling.shiftState == "clutchIn" then
-    M.clutchRatio = max(M.clutchRatio - dt * clutchHandling.clutchInRate * shiftAggression, 0)
-    if M.clutchRatio <= 0 then
-      if previousGearIndex ~= 0 then
-        clutchHandling.shiftState = "neutral"
-      else
-        clutchHandling.shiftState = "shift"
-      end
-    end
-  elseif clutchHandling.shiftState == "neutral" then
-    gearbox:setGearIndex(0)
-    M.timer.shiftDelayTimer = M.timerConstants.shiftDelay / shiftAggression
-    clutchHandling.shiftState = "shift"
-  elseif clutchHandling.shiftState == "shift" then
-    local canShift = true
-    local isEngineRunning = engine.ignitionCoef >= 1 and not engine.isStalled
-    local targetAV = (gearbox.gearRatios[newDesiredGearIndex] / gearbox.gearRatios[previousGearIndex]) * (gearbox.outputAV1 * gearbox.gearRatios[previousGearIndex])
-    if targetAV > engine.outputAV1 and previousGearIndex ~= 0 and not clutchHandling.didRevMatch and clutchHandling.preShiftClutchRatio >= 1 and isEngineRunning and clutchHandling.revMatchThrottle > 0 then
-      M.throttle = clutchHandling.revMatchThrottle
-      canShift = engine.outputAV1 >= targetAV or targetAV > engine.maxAV
-      clutchHandling.didRevMatch = canShift
-    end
-    if M.timer.shiftDelayTimer <= 0 and canShift then
-      gearbox:setGearIndex(newDesiredGearIndex)
-      newDesiredGearIndex = 0
-      previousGearIndex = 0
-      M.timer.gearChangeDelayTimer = M.timerConstants.gearChangeDelay
-      clutchHandling.didRevMatch = false
-      clutchHandling.shiftState = "clutchOut"
-    end
-  elseif clutchHandling.shiftState == "clutchOut" then
-    if clutchHandling.preShiftClutchRatio > 0 then
-      local stallPrevent = min(max((engine.outputAV1 * 0.9 - engine.idleAV) / (engine.idleAV * 0.1), 0), 1)
-      M.clutchRatio = min(M.clutchRatio + dt * clutchHandling.clutchOutRate * shiftAggression, stallPrevent * stallPrevent)
-      if M.clutchRatio >= 1 or stallPrevent < 1 then
-        M.updateGearboxGFX = gearboxLogic.inGear
-      end
-    else
-      M.updateGearboxGFX = gearboxLogic.inGear
-    end
+  if newDesiredGearIndex > gearIndex and gearIndex > 0 and M.throttle > 0 then
+    engine:cutIgnition(ignitionCutTime)
   end
-  M.currentGearIndex = gearbox.gearIndex
+
+  gearbox:setGearIndex(newDesiredGearIndex)
+  newDesiredGearIndex = 0
+  M.timer.gearChangeDelayTimer = M.timerConstants.gearChangeDelay
+  M.updateGearboxGFX = gearboxLogic.inGear
   updateExposedData()
 end
 
@@ -397,7 +338,7 @@ local function updateInGear(dt)
       clutchHandling.clutchLaunchIFactor = min(clutchHandling.clutchLaunchIFactor + dt * 0.5, 1)
       M.clutchRatio = min(max(ratio * ratio, 0), 1)
     elseif M.throttle > 0 then
-      if M.smoothedValues.avgAV * gearbox.gearRatio * engine.outputAV1 >= 0 then
+      if gearbox.outputAV1 * gearbox.gearRatio * engine.outputAV1 >= 0 then
         M.clutchRatio = 1
       elseif abs(gearbox.gearIndex) > 1 then
         local ratio = max((engine.outputAV1 - clutchHandling.clutchLaunchStartAV * (1 + M.throttle)) / (clutchHandling.clutchLaunchTargetAV * (1 + clutchHandling.clutchLaunchIFactor)), 0)
@@ -428,7 +369,7 @@ local function updateInGear(dt)
       M.clutchRatio = min(1 - M.inputValues.clutch, 1)
     end
 
-    if engine.ignitionCoef < 1 or ((engine.idleAVStartOffset or 0) > 1 and M.throttle <= 0) then
+    if engine.ignitionCoef < 1 or (engine.idleAVStartOffset > 1 and M.throttle <= 0) then
       M.clutchRatio = 0
     end
   else
@@ -439,76 +380,28 @@ local function updateInGear(dt)
 end
 
 local function updateWhileShifting(dt)
-  M.isShifting = true
   -- old -> N -> wait -> new -> in gear update
-  if M.gearboxHandling.autoThrottle then
-    --set throttle to zero when we are actually shifting, this does not apply when going from N to 1 or -1
-    M.throttle = (abs(gearbox.gearIndex) <= 1 and abs(newDesiredGearIndex) <= 1) and M.inputValues.throttle or 0
-  else
-    M.throttle = M.inputValues.throttle
-  end
   M.brake = M.inputValues.brake
+  M.throttle = M.inputValues.throttle
   M.isArcadeSwitched = false
+  M.isShifting = true
 
-  if clutchHandling.shiftState == "clutchIn" then
-    if M.gearboxHandling.autoClutch then
-      M.clutchRatio = max(M.clutchRatio - dt * clutchHandling.clutchInRate * shiftAggression, 0)
-      if M.clutchRatio <= 0 then
-        if gearbox.gearIndex ~= 0 then
-          clutchHandling.shiftState = "neutral"
-        else
-          clutchHandling.shiftState = "shift"
-        end
-      end
-    else
-      M.clutchRatio = min(1 - M.inputValues.clutch, M.clutchRatio)
-      if gearbox.gearIndex ~= 0 then
-        clutchHandling.shiftState = "neutral"
-      else
-        clutchHandling.shiftState = "shift"
-      end
+  --if we are shifting into neutral we need to delay this a little bit because the user might use an H pattern shifter which goes through neutral on every shift
+  --if we were not to delay this neutral shift, the user can't get out of 1st gear due to gear change limitations of the sequential
+  --so only shift to neutral if the new desired gear is still neutral after 0.x seconds (ie the user actually left the H shifter in neutral and did not move to the next gear)
+  if newDesiredGearIndex == 0 and neutralRejectTimer > 0 then
+    neutralRejectTimer = neutralRejectTimer - dt
+  else
+    if newDesiredGearIndex > gearbox.gearIndex and gearbox.gearIndex > 0 and M.throttle > 0 then
+      engine:cutIgnition(ignitionCutTime)
     end
-  elseif clutchHandling.shiftState == "neutral" then
-    gearbox:setGearIndex(0)
-    M.timer.shiftDelayTimer = M.timerConstants.shiftDelay / (M.gearboxHandling.autoClutch and shiftAggression or 1)
-    clutchHandling.shiftState = "shift"
-  elseif clutchHandling.shiftState == "shift" then
-    local canShift = true
-    local targetAV = gearbox.gearRatios[newDesiredGearIndex] * gearbox.outputAV1
-    local isEngineRunning = engine.ignitionCoef >= 1 and not engine.isStalled
-    if M.gearboxHandling.autoThrottle and targetAV > engine.outputAV1 and not clutchHandling.didRevMatch and clutchHandling.preShiftClutchRatio >= 1 and isEngineRunning and clutchHandling.revMatchThrottle > 0 then
-      M.throttle = clutchHandling.revMatchThrottle
-      canShift = engine.outputAV1 >= targetAV or targetAV > engine.maxAV
-      clutchHandling.didRevMatch = canShift
-    end
-    if not M.gearboxHandling.autoClutch then
-      M.clutchRatio = min(1 - M.inputValues.clutch, M.clutchRatio)
-    end
-    if M.timer.shiftDelayTimer <= 0 and canShift then
-      if gearbox.gearIndex ~= newDesiredGearIndex then
-        gearbox:setGearIndex(newDesiredGearIndex)
-      end
-      newDesiredGearIndex = gearbox.gearIndex == newDesiredGearIndex and 0 or newDesiredGearIndex
-      previousGearIndex = 0
-      M.timer.gearChangeDelayTimer = M.timerConstants.gearChangeDelay
-      clutchHandling.didRevMatch = false
-      clutchHandling.shiftState = "clutchOut"
-    end
-  elseif clutchHandling.shiftState == "clutchOut" then
-    if M.gearboxHandling.autoClutch and clutchHandling.preShiftClutchRatio > 0 then
-      local stallPrevent = min(max((engine.outputAV1 * 0.9 - engine.idleAV) / (engine.idleAV * 0.1), 0), 1)
-      M.clutchRatio = min(M.clutchRatio + dt * clutchHandling.clutchOutRate * shiftAggression, stallPrevent)
-      if M.clutchRatio >= 1 or stallPrevent < 1 then
-        M.updateGearboxGFX = gearboxLogic.inGear
-      end
-    else
-      if not M.gearboxHandling.autoClutch then
-        M.clutchRatio = 1 - M.inputValues.clutch
-      end
-      M.updateGearboxGFX = gearboxLogic.inGear
-    end
+
+    gearbox:setGearIndex(newDesiredGearIndex)
+    newDesiredGearIndex = 0
+    M.timer.gearChangeDelayTimer = M.timerConstants.gearChangeDelay
+    M.updateGearboxGFX = gearboxLogic.inGear
   end
-  M.currentGearIndex = gearbox.gearIndex
+
   updateExposedData()
 end
 
@@ -523,12 +416,13 @@ local function init(jbeamData, sharedFunctionTable)
   engine = powertrain.getDevice("mainEngine")
   gearbox = powertrain.getDevice("gearbox")
   newDesiredGearIndex = 0
-  previousGearIndex = 0
 
   M.currentGearIndex = 0
   M.throttle = 0
   M.brake = 0
   M.clutchRatio = 0
+
+  ignitionCutTime = jbeamData.ignitionCutTime or 0.15
 
   gearboxAvailableLogic = {
     arcade = {
@@ -550,11 +444,7 @@ local function init(jbeamData, sharedFunctionTable)
   clutchHandling.clutchLaunchTargetAV = (jbeamData.clutchLaunchTargetRPM or 3000) * constants.rpmToAV * 0.5
   clutchHandling.clutchLaunchStartAV = ((jbeamData.clutchLaunchStartRPM or 2000) * constants.rpmToAV - engine.idleAV) * 0.5
   clutchHandling.clutchLaunchIFactor = 0
-
-  clutchHandling.clutchInRate = jbeamData.clutchInRate or 15
-  clutchHandling.clutchOutRate = jbeamData.clutchOutRate or 10
-
-  clutchHandling.revMatchThrottle = jbeamData.revMatchThrottle or 0.5
+  clutchHandling.lastClutchInput = 0
 
   M.maxRPM = engine.maxRPM
   M.idleRPM = engine.idleRPM

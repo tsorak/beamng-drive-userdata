@@ -229,7 +229,30 @@ local function updateGFX(dt)
   bovEngaged = bovEnabled and bovRequested
 
   bovTimer = max(bovTimer - dt, 0)
+  -- print(assignedEngine.throttle)
+
+  if M.forceBovCancelTimer > 0 then
+    M.forceBovCancelTimer = M.forceBovCancelTimer - 1
+    print(M.forceBovCancelTimer)
+  elseif M.forceBovCancelTimer == 0 then
+    print("cancel bov")
+    M.cancelBov = true
+    M.forceBovCancelTimer = -1
+  end
+  
+  if M.cancelBov then
+    M.cancelBov = false
+    if bovEnabled then
+      obj:cutSFX(bovSound)
+    else
+      obj:cutSFX(flutterSound)
+    end
+  end
+
   if M.forceBov or bovRequested and needsBov and not lastBOVValue and bovTimer <= 0 then
+    if M.forceBov then
+      M.forceBovCancelTimer = 24
+    end
     M.forceBov = false
     local relativePressure = min(max(turboPressure / maxTurboPressure, 0), 1)
     if bovEnabled then
@@ -534,5 +557,7 @@ M.applyDeformGroupDamage = applyDeformGroupDamage
 M.setPartCondition = setPartCondition
 M.getPartCondition = getPartCondition
 M.forceBov = false
+M.forceBovCancelTimer = -1
+M.cancelBov = false
 
 return M
