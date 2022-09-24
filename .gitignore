@@ -1,8 +1,8 @@
-gameTelemetries
-mods
-screenshots
-settings
-temp
-trackEditor
+/gameTelemetries
+/mods
+/screenshots
+/settings
+/temp
+/trackEditor
 *.log
 *.txt
