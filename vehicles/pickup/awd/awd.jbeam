@@ -1,0 +1,18 @@
+{
+  "pickup_karostPowertrain": {
+    "information": {
+      "authors": "BeamNG",
+      "name": "karostPowertrain",
+      "value": 1000
+    },
+    "slotType": "pickup_mod",
+    "controller": [
+      [
+        "filename"
+      ],
+      [
+        "karostPowertrain"
+      ]
+    ]
+  }
+}
