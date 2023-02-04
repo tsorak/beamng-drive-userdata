@@ -230,9 +230,9 @@ local function updateGFX(dt)
 
   bovTimer = max(bovTimer - dt, 0)
   -- print(assignedEngine.throttle)
-
+  -- print(dt)
   if M.forceBovCancelTimer > 0 then
-    M.forceBovCancelTimer = M.forceBovCancelTimer - 1
+    M.forceBovCancelTimer = max(M.forceBovCancelTimer - dt, 0)
     print(M.forceBovCancelTimer)
   elseif M.forceBovCancelTimer == 0 then
     print("cancel bov")
@@ -251,7 +251,7 @@ local function updateGFX(dt)
 
   if M.forceBov or bovRequested and needsBov and not lastBOVValue and bovTimer <= 0 then
     if M.forceBov then
-      M.forceBovCancelTimer = 24
+      M.forceBovCancelTimer = 0.25
     end
     M.forceBov = false
     local relativePressure = min(max(turboPressure / maxTurboPressure, 0), 1)

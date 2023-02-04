@@ -4,5 +4,12 @@
 /settings
 /temp
 /trackEditor
+/gameplay
 *.log
 *.txt
+*.pc
+*.jpg
+*.png
+
+*.materials.json
+data-temp.json

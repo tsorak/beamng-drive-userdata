@@ -131,18 +131,21 @@ local function shiftDown()
   end
 end
 
-local function shiftToGearIndex(index)
+local function shiftToGearIndex(index, ignoreSequentialBounds)
   local prevGearIndex = gearbox.gearIndex
   if index == 0 and abs(prevGearIndex) > 1 then
     return
   end
   local gearIndex = min(max(index, gearbox.minGearIndex), gearbox.maxGearIndex)
 
-  local maxIndex = min(prevGearIndex + 1, gearbox.maxGearIndex)
-  local minIndex = max(prevGearIndex - 1, gearbox.minGearIndex)
+  --if specifically requested to ignore the +-1 bounds of the sequential, don't enforce them
+  if not ignoreSequentialBounds then
+    local maxIndex = min(prevGearIndex + 1, gearbox.maxGearIndex)
+    local minIndex = max(prevGearIndex - 1, gearbox.minGearIndex)
 
-  --adjust expected gearIndex based on sequential limits, otherwise the safety won't work correctly as it will see a 0 gearratio when going into N from higher gears
-  gearIndex = min(max(gearIndex, minIndex), maxIndex)
+    --adjust expected gearIndex based on sequential limits, otherwise the safety won't work correctly as it will see a 0 gearratio when going into N from higher gears
+    gearIndex = min(max(gearIndex, minIndex), maxIndex)
+  end
 
   if M.gearboxHandling.gearboxSafety then
     local gearRatio = gearbox.gearRatios[gearIndex]
@@ -166,14 +169,14 @@ local function updateExposedData()
   M.waterTemp = (engine and engine.thermals) and (engine.thermals.coolantTemperature or engine.thermals.oilTemperature) or 0
   M.oilTemp = (engine and engine.thermals) and engine.thermals.oilTemperature or 0
   M.checkEngine = engine and engine.isDisabled or false
-  M.ignition = engine and (engine.ignitionCoef > 0 and not engine.isDisabled) or false
+  M.ignition = electrics.values.ignitionLevel > 1
   M.engineThrottle = (engine and engine.isDisabled) and 0 or M.throttle
   M.engineLoad = engine and (engine.isDisabled and 0 or engine.instantEngineLoad) or 0
   M.running = engine and not engine.isDisabled or false
   M.engineTorque = engine and engine.combustionTorque or 0
   M.flywheelTorque = engine and engine.outputTorque1 or 0
   M.gearboxTorque = gearbox and gearbox.outputTorque1 or 0
-  M.isEngineRunning = engine and ((engine.isStalled or engine.ignitionCoef <= 0) and 0 or 1) or 1
+  M.isEngineRunning = engine and ((engine.outputAV1 > engine.starterMaxAV * 0.8) and 1 or 0) or 1
   M.minGearIndex = gearbox.minGearIndex
   M.maxGearIndex = gearbox.maxGearIndex
   M.shiftingAggression = 1
@@ -201,8 +204,9 @@ local function updateInGearArcade(dt)
   end
 
   if M.timer.gearChangeDelayTimer <= 0 and gearIndex ~= 0 then
-    local tmpEngineAV = engineAV
-    local relEngineAV = engineAV / gearbox.gearRatio
+    local gearboxInputAV = gearbox.inputAV
+    local tmpEngineAV = gearboxInputAV
+    local relEngineAV = gearboxInputAV / gearbox.gearRatio
 
     sharedFunctions.selectShiftPoints(gearIndex)
 
@@ -250,11 +254,6 @@ local function updateInGearArcade(dt)
       gearIndex = -1
       M.timer.neutralSelectionDelayTimer = M.timerConstants.neutralSelectionDelay
     end
-
-    if engine.ignitionCoef < 1 and gearIndex ~= 0 then
-      gearIndex = 0
-      M.timer.neutralSelectionDelayTimer = M.timerConstants.neutralSelectionDelay
-    end
   end
 
   if gearbox.gearIndex ~= gearIndex then
@@ -263,11 +262,13 @@ local function updateInGearArcade(dt)
   end
 
   -- Control clutch to buildup engine RPM
-  if abs(gearIndex) == 1 and M.throttle > 0 then
-    local ratio = max((engine.outputAV1 - clutchHandling.clutchLaunchStartAV * (1 + M.throttle)) / (clutchHandling.clutchLaunchTargetAV * (1 + clutchHandling.clutchLaunchIFactor)), 0)
-    clutchHandling.clutchLaunchIFactor = min(clutchHandling.clutchLaunchIFactor + dt * 0.5, 1)
-    M.clutchRatio = min(max(ratio * ratio, 0), 1)
-  elseif M.throttle > 0 then
+  if abs(gearIndex) == 1 then
+    if M.throttle > 0 then
+      local ratio = max((engine.outputAV1 - clutchHandling.clutchLaunchStartAV * (1 + M.throttle)) / (clutchHandling.clutchLaunchTargetAV * (1 + clutchHandling.clutchLaunchIFactor)), 0)
+      clutchHandling.clutchLaunchIFactor = min(clutchHandling.clutchLaunchIFactor + dt * 0.5, 1)
+      M.clutchRatio = min(max(ratio * ratio, 0), 1)
+    end
+  else
     if M.smoothedValues.avgAV * gearbox.gearRatio * engine.outputAV1 >= 0 then
       M.clutchRatio = 1
     elseif abs(gearbox.gearIndex) > 1 then
@@ -333,11 +334,13 @@ local function updateInGear(dt)
 
   -- Control clutch to buildup engine RPM
   if M.gearboxHandling.autoClutch then
-    if abs(gearbox.gearIndex) == 1 and M.throttle > 0 then
-      local ratio = max((engine.outputAV1 - clutchHandling.clutchLaunchStartAV * (1 + M.throttle)) / (clutchHandling.clutchLaunchTargetAV * (1 + clutchHandling.clutchLaunchIFactor)), 0)
-      clutchHandling.clutchLaunchIFactor = min(clutchHandling.clutchLaunchIFactor + dt * 0.5, 1)
-      M.clutchRatio = min(max(ratio * ratio, 0), 1)
-    elseif M.throttle > 0 then
+    if abs(gearbox.gearIndex) == 1 then
+      if M.throttle > 0 then
+        local ratio = max((engine.outputAV1 - clutchHandling.clutchLaunchStartAV * (1 + M.throttle)) / (clutchHandling.clutchLaunchTargetAV * (1 + clutchHandling.clutchLaunchIFactor)), 0)
+        clutchHandling.clutchLaunchIFactor = min(clutchHandling.clutchLaunchIFactor + dt * 0.5, 1)
+        M.clutchRatio = min(max(ratio * ratio, 0), 1)
+      end
+    else
       if gearbox.outputAV1 * gearbox.gearRatio * engine.outputAV1 >= 0 then
         M.clutchRatio = 1
       elseif abs(gearbox.gearIndex) > 1 then
@@ -369,7 +372,7 @@ local function updateInGear(dt)
       M.clutchRatio = min(1 - M.inputValues.clutch, 1)
     end
 
-    if engine.ignitionCoef < 1 or (engine.idleAVStartOffset > 1 and M.throttle <= 0) then
+    if engine.idleAVStartOffset > 1 and M.throttle <= 0 then
       M.clutchRatio = 0
     end
   else
@@ -453,6 +456,18 @@ local function init(jbeamData, sharedFunctionTable)
   M.energyStorages = sharedFunctions.getEnergyStorages({engine})
 end
 
+local function getState()
+  local data = {grb_idx = gearbox.gearIndex}
+
+  return tableIsEmpty(data) and nil or data
+end
+
+local function setState(data)
+  if data.grb_idx then
+    shiftToGearIndex(data.grb_idx, true)
+  end
+end
+
 M.init = init
 
 M.gearboxBehaviorChanged = gearboxBehaviorChanged
@@ -463,5 +478,8 @@ M.updateGearboxGFX = nop
 M.getGearName = getGearName
 M.getGearPosition = getGearPosition
 M.sendTorqueData = sendTorqueData
+
+M.getState = getState
+M.setState = setState
 
 return M

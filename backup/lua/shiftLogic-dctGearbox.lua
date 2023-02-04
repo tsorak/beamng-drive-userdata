@@ -314,14 +314,14 @@ local function updateExposedData()
   M.waterTemp = (engine and engine.thermals) and (engine.thermals.coolantTemperature or engine.thermals.oilTemperature) or 0
   M.oilTemp = (engine and engine.thermals) and engine.thermals.oilTemperature or 0
   M.checkEngine = engine and engine.isDisabled or false
-  M.ignition = engine and (engine.ignitionCoef > 0 and not engine.isDisabled) or false
+  M.ignition = electrics.values.ignitionLevel > 1
   M.engineThrottle = (engine and engine.isDisabled) and 0 or M.throttle
   M.engineLoad = engine and (engine.isDisabled and 0 or engine.instantEngineLoad) or 0
   M.running = engine and not engine.isDisabled or false
   M.engineTorque = engine and engine.combustionTorque or 0
   M.flywheelTorque = engine and engine.outputTorque1 or 0
   M.gearboxTorque = gearbox and gearbox.outputTorque1 or 0
-  M.isEngineRunning = engine and ((engine.isStalled or engine.ignitionCoef <= 0) and 0 or 1) or 1
+  M.isEngineRunning = engine and ((engine.outputAV1 > engine.starterMaxAV * 0.8) and 1 or 0) or 1
   M.minGearIndex = gearbox.minGearIndex
   M.maxGearIndex = gearbox.maxGearIndex
 end
@@ -402,10 +402,10 @@ local function updateInGearArcade(dt)
       applyGearboxMode()
     end
 
-    if engine.ignitionCoef < 1 and automaticHandling.mode ~= "N" then
+    if electrics.values.ignitionLevel ~= 2 and automaticHandling.mode ~= "P" then
       gearIndex = 0
       M.timer.neutralSelectionDelayTimer = M.timerConstants.neutralSelectionDelay
-      automaticHandling.mode = "N"
+      automaticHandling.mode = "P"
       neutralGearChanged = true
       applyGearboxMode()
     end
@@ -437,6 +437,11 @@ local function updateInGearArcade(dt)
 
   if engine.outputAV1 < engine.idleAV or engine.outputAV1 > engine.maxAV * 1.05 or automaticHandling.mode == "P" or automaticHandling.mode == "N" then
     --always prevent stalling and overrevving
+    dctClutchRatio = 0
+  end
+
+  --prevent the clutch from engaging while the rpm is still high from just starting the engine
+  if engine.idleAVStartOffset > 1 and M.throttle <= 0 then
     dctClutchRatio = 0
   end
 
@@ -515,6 +520,9 @@ local function updateWhileShiftingArcade(dt)
     if gearbox[dct.primaryAccess.gearIndexName] > 0 and gearbox[dct.primaryAccess.gearIndexName] < gearbox[dct.secondaryAccess.gearIndexName] and M.throttle > 0 and adjustedClutchTime < 0.15 and not clutchHandling.didCutIgnition then
       engine:cutIgnition(adjustedClutchTime)
       clutchHandling.didCutIgnition = true
+    end
+    if isDownShift and M.brake > 0.5 then
+      adjustedClutchTime = 1
     end
 
     local clutchRatio = min(electrics.values[dct.secondaryAccess.clutchRatioName] + (1 / adjustedClutchTime) * dt, 1)
@@ -614,7 +622,7 @@ local function updateInGear(dt)
     dctClutchRatio = 0
   end
 
-  if engine.ignitionCoef < 1 or (engine.idleAVStartOffset > 1 and M.throttle <= 0) then
+  if engine.idleAVStartOffset > 1 and M.throttle <= 0 then
     dctClutchRatio = 0
   end
 
@@ -696,6 +704,9 @@ local function updateWhileShifting(dt)
     if gearbox[dct.primaryAccess.gearIndexName] > 0 and gearbox[dct.primaryAccess.gearIndexName] < gearbox[dct.secondaryAccess.gearIndexName] and M.throttle > 0 and adjustedClutchTime < 0.15 and not clutchHandling.didCutIgnition then
       engine:cutIgnition(adjustedClutchTime)
       clutchHandling.didCutIgnition = true
+    end
+    if isDownShift and M.brake > 0.5 then
+      adjustedClutchTime = 0.5
     end
     local clutchRatio = min(electrics.values[dct.secondaryAccess.clutchRatioName] + (1 / adjustedClutchTime) * dt, 1)
     local stallPrevent = min(max((engine.outputAV1 * 0.9 - engine.idleAV) / (engine.idleAV * 0.1), 0), 1)
@@ -820,6 +831,21 @@ local function init(jbeamData, sharedFunctionTable)
   applyGearboxMode()
 end
 
+local function getState()
+  local data = {grb_mde = automaticHandling.mode}
+
+  return tableIsEmpty(data) and nil or data
+end
+
+local function setState(data)
+  if data.grb_mde then
+    automaticHandling.mode = data.grb_mde
+    automaticHandling.modeIndex = automaticHandling.modeIndexLookup[automaticHandling.mode]
+    applyGearboxMode()
+    applyGearboxModeRestrictions()
+  end
+end
+
 M.init = init
 
 M.gearboxBehaviorChanged = gearboxBehaviorChanged
@@ -831,5 +857,8 @@ M.getGearName = getGearName
 M.getGearPosition = getGearPosition
 M.setDefaultForwardMode = setDefaultForwardMode
 M.sendTorqueData = sendTorqueData
+
+M.getState = getState
+M.setState = setState
 
 return M
