@@ -5,6 +5,7 @@
 /temp
 /trackEditor
 /gameplay
+/floweditor
 *.log
 *.txt
 
@@ -12,4 +13,3 @@
 
 
 *.materials.json
-data-temp.json
