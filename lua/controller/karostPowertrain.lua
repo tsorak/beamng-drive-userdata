@@ -119,11 +119,11 @@ local function updateGFX(dt) -- ms
 
   if electrics.values.parkingbrake ~= 0 then
     tc.diffTorqueSplitA = 0
-    tc.diffTorqueSplitB = 1.0 - tc.diffTorqueSplitA
+    tc.diffTorqueSplitB = 1
   else
-    tc.diffTorqueSplitB = 1.0 - tc.diffTorqueSplitA
-    tc.diffTorqueSplitB = tc.diffTorqueSplitB
-    tc.diffTorqueSplitA = tc.diffTorqueSplitA
+    tc.diffTorqueSplitB = 1 - tc.diffTorqueSplitA
+    -- tc.diffTorqueSplitB = tc.diffTorqueSplitB
+    -- tc.diffTorqueSplitA = tc.diffTorqueSplitA
   end
 
   -- speedDiff = math.max(math.min((electrics.values.airspeed/electrics.values.wheelspeed),0.9),0.85)^1 + 0.1
@@ -243,6 +243,10 @@ local function onReset(jbeamData)
   -- wheels.RL = powertrain.getDevice("spindleRL") or powertrain.getDevice("wheelaxleRL") or nil
   -- wheels.RR = powertrain.getDevice("spindleRR") or powertrain.getDevice("wheelaxleRR") or nil
   -- print()
+
+  tc.diffTorqueSplitA = 0.5
+  tc.diffTorqueSplitB = 0.5
+
   for i = 0, 3, 1 do
     wheelIDS[wheels.wheels[i].name] = i;
     -- print(wheelIDS[wheels.wheels[i].name])
