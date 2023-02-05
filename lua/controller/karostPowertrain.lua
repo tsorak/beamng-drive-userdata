@@ -120,6 +120,10 @@ local function updateGFX(dt) -- ms
   if electrics.values.parkingbrake ~= 0 then
     tc.diffTorqueSplitA = 0
     tc.diffTorqueSplitB = 1
+
+    if electrics.values.throttle == 0 then
+      electrics.values.clutch = 1
+    end
   else
     tc.diffTorqueSplitB = 1 - tc.diffTorqueSplitA
     -- tc.diffTorqueSplitB = tc.diffTorqueSplitB
